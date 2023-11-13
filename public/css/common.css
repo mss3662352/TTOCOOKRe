@@ -1,0 +1,29 @@
+/* font-family: 'Nanum Gothic', sans-serif; */
+/* font-family: 'Nanum Myeongjo', serif; */
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    user-select: none;
+}
+/* #868707; */
+li {
+    list-style: none;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+body {
+    font-family: var(--font-ko);
+}
+
+
+button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}

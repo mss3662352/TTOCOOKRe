@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO -->
+    <title>나만의 감성식탁, 또쿡</title>
+    <meta name="description" content="portfolio for mss">
+    <meta name="author" content="mss3662352" />
+    <link rel="shortcut icon" href="./images/cat3.ico" type="image/x-icon">
+    <!-- OGD (Open Graph Data) -->
+    <meta property="og:title" content="나만의 감정식탁, 또쿡" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="배포후 생성된 url" />
+    <meta property="og:img" content="배포후 생성된 img" />
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FONT AWESOME -->
+    <script src="https://kit.fontawesome.com/3e1218b38a.js" crossorigin="anonymous"></script>
+    <!-- SWIPER -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/recipe_type.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- JAVASCRIPT -->
+    <script src="/src/recipe_ingre.js"></script>
+</head>
+
+<body>
+    <div id="SubHeader">
+        <%- include('sub_header', { isAuthenticated: isAuthenticated }) %>
+    </div>
+    <div class="recipe_type_wrap">
+        <div class="recipe_type_title">
+            <h1>
+                OUR RECIPES
+            </h1>
+            <p>오늘은 <span>어떤재료</span>로 요리해볼까요?</p>
+        </div>
+        <ul class="recipe_type_tab">
+            <li class="active">
+                <a href="">모두보기</a>
+            </li>
+            <!-- 카테고리 추가 -->
+        </ul>
+        <div class="recipe_type_content">
+            <div class="content_option">
+                <select name="" id="select">
+                    <option value="">최신순</option>
+                    <option value="">추천순</option>
+                    <option value="">조리시간순</option>
+                </select>
+            </div>
+            <ul class="content_list">
+                <!-- 재료별 레시피 -->
+            </ul>
+            <div class="pagination">
+                <ul>
+                    <!-- 페이징 기능 -->
+                </ul>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="footer_top">
+            <ul class="site_map">
+                <li><a href="#">고객센터</a></li>
+                <li><a href="#">이용약관</a></li>
+                <li> <a href="#">개인정보처리방침</a></li>
+                <li> <a href="#">이메일무단수집금지</a></li>
+                <li> <a href="#">Contact Us</a></li>
+                </li>
+            </ul>
+            <button>
+                나만의 레시피 올리기
+                <div>
+                    <img src="/img/footer_arrow.png" alt="">
+                </div>
+            </button>
+        </div>
+        <div class="footer_des">
+            <ul>
+                <li>
+                    (주)또쿡 : 울산광역시 남구 무거동 (960823)
+                </li>
+                <li>
+                    <ul>
+                        <li>대표이사 문상석</li>
+                        <li>T.010.4095.2915</li>
+                        <li>F.010.4095.2915</li>
+                        <li>E-MAIL.MSS3662352@naver.com</li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <li>사업자등록번호 : 010-40-952915</li>
+                        <li>통신판매신고번호:1996-08-23</li>
+                    </ul>
+                </li>
+            </ul>
+            <button>
+                고객센터 연결하기
+                <div>
+                    <img src="/img/arrows.png" alt="">
+                </div>
+            </button>
+        </div>
+        <div class="footer_bottom">
+            <p>© TTOCOOK CO,. LTD. ALL RIGHTS RESERVED.</p>
+            <h1><span>나만의 감정식탁, </span>TTOCOOK</h1>
+        </div>
+    </footer>
+    <!-- BUTTONMODAL -->
+    <button class="top_btn">
+        <img src="/img/top_btn.png" alt="탑버튼">
+    </button>
+    <div class="recipe_btn_wrap">
+        <button class="recipe_btn">
+            나만의 레시피 올리기
+        </button>
+    </div>
+</body>
+
+<script>
+    /* BTN_TOP */
+    $(function () {
+        $(".top_btn").click(function () {
+            $('html,body').animate({
+                scrollTop: 0
+            }, 400);
+            return false;
+        })
+    });
+</script>
+
+
+
+</html>

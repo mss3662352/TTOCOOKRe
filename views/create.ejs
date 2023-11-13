@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO -->
+    <title>나만의 감성식탁, 또쿡</title>
+    <meta name="description" content="portfolio for mss">
+    <meta name="author" content="mss3662352" />
+    <link rel="shortcut icon" href="./images/cat3.ico" type="image/x-icon">
+    <!-- OGD (Open Graph Data) -->
+    <meta property="og:title" content="나만의 감정식탁, 또쿡" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="배포후 생성된 url" />
+    <meta property="og:img" content="배포후 생성된 img" />
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FONT AWESOME -->
+    <script src="https://kit.fontawesome.com/3e1218b38a.js" crossorigin="anonymous"></script>
+    <!-- SWIPER -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/create.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- JAVASCRIPT -->
+    <script src="/src/create.js"></script>
+</head>
+
+<body>
+
+    <div id="SubHeader">
+        <%- include('sub_header', { isAuthenticated: isAuthenticated }) %>
+    </div>
+    <div class="create_wrap">
+        <div class="create_title">
+            <div>
+                <h1>레시피 등록하기</h1>
+                <span>당신만의 소중한 레시피를 또쿡에 올려주세요.</span>
+            </div>
+            <button>
+                <a href="">
+                    내 레시피 보러가기
+                    <img src="/img/recipe_arrow.png" alt="">
+                </a>
+            </button>
+        </div>
+        <div class="create_content">
+            <div class="thum_wrap">
+                <label class="thum" for="thum">
+                    <input type="file" id="thum" name="thum">
+                    <div id="thum_area">
+                        <img src="/img/plus.png" alt="사진업로드하기" class="addPic">
+                    </div>
+                </label>
+                <span>대표사진을 등록해주세요.</span>
+            </div>
+            <form action="#">
+                <div class="my_title form_wrap">
+                    <span>레시피 별칭</span>
+                    <div class="input">
+                        <input type="text" placeholder="ex) 폭신폭신 부드러운/ 아이들이 좋아하는/ 가을에 제철인" name="beauty">
+                    </div>
+                </div>
+                <div class="my_title form_wrap">
+                    <span>레시피 이름</span>
+                    <div class="input">
+                        <input type="text" placeholder="레시피 이름을 입력해주세요." name="title">
+                    </div>
+                </div>
+                <div class="my_category form_wrap">
+                    <span>카테고리</span>
+                    <div class="input">
+                        <select id="type" name="recipe_type">
+                        </select>
+                        <select id="ingre" name="ingredient">
+                        </select>
+                    </div>
+                </div>
+                <div class="my_inform form_wrap">
+                    <span>요리정보</span>
+                    <div class="input">
+                        <select id="time" name="time">
+                            <option value="05">05분</option>
+                            <option value="10">10분</option>
+                            <option value="15">15분</option>
+                            <option value="20">20분</option>
+                            <option value="25">25분</option>
+                            <option value="30">30분</option>
+                            <option value="35">35분</option>
+                            <option value="45">45분</option>
+                            <option value="50">50분</option>
+                            <option value="55">55분</option>
+                            <option value="60">60분</option>
+                        </select>
+                        <select id="level" name="level">
+                            <option value="A">초급</option>
+                            <option value="B">중급</option>
+                            <option value="C">고급</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="my_des">
+            <div class="des_title">
+                <p>레시피 소개</p>
+                <span>당신의 레시피에 관한 이야기를 들려주세요.</span>
+            </div>
+            <div class="des_text">
+                <textarea name="introduction" cols="30" rows="10" placeholder="ex)행복한 날, 사랑하는 사람들과 함께하는 양지 수육 전골."></textarea>
+            </div>
+        </div>
+        <div class="ingradient">
+            <div>
+                <div class="ingradient_title">
+                    <p>재료 등록</p>
+                    <span>
+                        <img src="/img/warning.png" alt="">
+                        재료가 남거나 부족하지 않도록 정확한 계량정보를 적어주세요.
+                    </span>
+                </div>
+                <div class="ingradient_form">
+                    <div class="ingre">
+                        <input type="text" placeholder="ex) 돼지고기">
+                        <input type="text" placeholder="300g">
+                        <span class="ingre_down">-</span>
+                    </div>
+                    <div class="ingre">
+                        <input type="text" placeholder="ex) 양배추">
+                        <input type="text" placeholder="1/2개">
+                        <span class="ingre_down">-</span>
+                    </div>
+                    <div class="ingre">
+                        <input type="text" placeholder="ex)참기름">
+                        <input type="text" placeholder="1T">
+                        <span class="ingre_down">-</span>
+                    </div>
+                    <button id="ingre_up">
+                        재료 추가하기
+                        <img src="/img/plus(white).png" alt="재료추가하기">
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div class="ingradient_title">
+                    <p>재료 comment</p>
+                    <span>
+                        <img src="/img/warning.png" alt="">
+                        대체 가능한 재료나 재료 보관방법 등 재료 관련 꿀팁을 적어주세요.
+                    </span>
+                </div>
+                <div class="ingradient_textarea">
+                    <textarea cols="30" rows="10" placeholder="ex) 해당 레시피에 국간장 4T로 기제 되어 있는데 집집마다 국간장의 염도가 많이 달라요.~기호에 따라 1~2T 넣어 간을 보시고 추가해 주세요.^^" name="ingre_tip"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="recipe_list">
+            <div class="list_title">
+                <p>레시피 순서</p>
+                <span>
+                    <img src="/img/warning.png" alt="주의사항">
+                    요리의 맛이 좌우될 수 있는 중요한 부분은 빠짐없이 적어주세요.
+                </span>
+            </div>
+            <ul class="list_wrap">
+                <li class="list">
+                    <h1>STEP 1.</h1>
+                    <textarea cols="30" rows="10" placeholder="소고기는 기름기를 떼어내고 적당한 크기로 썰어주세요."></textarea>
+                    <label for="list1">
+                        <input type="file" class="list_input" id="list1">
+                        <img src="/img/plus.png" alt="사진첨부하기" class="addPic">
+                    </label>
+                    <button class="step_down"><img src="/img/plus(white).png" alt=""></button>
+                </li>
+                <li class="list">
+                    <h1>STEP 2.</h1>
+                    <textarea cols="30" rows="10" placeholder="준비된 양념으로 먼저 고기를 조물조물 재워줍니다."></textarea>
+                    <label for="list2">
+                        <input type="file" class="list_input" id="list2">
+                        <img src="/img/plus.png" alt="사진첨부하기" class="addPic">
+                    </label>
+                    <button class="step_down"><img src="/img/plus(white).png" alt=""></button>
+                </li>
+                <button id="step_up">
+                    레시피 순서 추가하기
+                    <img src="/img/plus(white).png" alt="재료추가하기">
+                </button>
+            </ul>
+        </div>
+        <div class="tip">
+            <div class="tip_title">
+                <p>레시피 TIP</p>
+                <span>이 레시피에 더하는 나만의 팁을 알려주세요.</span>
+            </div>
+            <textarea name="tip" cols="30" rows="10" placeholder="고기에는 설탕을 넣으면 부드럽고 육질이 연해져요."></textarea>
+        </div>
+        <div class="done_wrap">
+            <button class="done">
+                레시피 등록하기
+            </button>
+        </div>
+    </div>
+    <footer>
+        <div class="footer_top">
+            <ul class="site_map">
+                <li><a href="#">고객센터</a></li>
+                <li><a href="#">이용약관</a></li>
+                <li> <a href="#">개인정보처리방침</a></li>
+                <li> <a href="#">이메일무단수집금지</a></li>
+                <li> <a href="#">Contact Us</a></li>
+                </li>
+            </ul>
+            <button>
+                나만의 레시피 올리기
+                <div>
+                    <img src="/img/footer_arrow.png" alt="">
+                </div>
+            </button>
+        </div>
+        <div class="footer_des">
+            <ul>
+                <li>
+                    (주)또쿡 : 울산광역시 남구 무거동 (960823)
+                </li>
+                <li>
+                    <ul>
+                        <li>대표이사 문상석</li>
+                        <li>T.010.4095.2915</li>
+                        <li>F.010.4095.2915</li>
+                        <li>E-MAIL.MSS3662352@naver.com</li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <li>사업자등록번호 : 010-40-952915</li>
+                        <li>통신판매신고번호:1996-08-23</li>
+                    </ul>
+                </li>
+            </ul>
+            <button>
+                고객센터 연결하기
+                <div>
+                    <img src="/img/arrows.png" alt="">
+                </div>
+            </button>
+        </div>
+        <div class="footer_bottom">
+            <p>© TTOCOOK CO,. LTD. ALL RIGHTS RESERVED.</p>
+            <h1><span>나만의 감정식탁, </span>TTOCOOK</h1>
+        </div>
+    </footer>
+    <!-- BUTTONMODAL -->
+    <button class="top_btn">
+        <img src="/img/top_btn.png" alt="탑버튼">
+    </button>
+</body>
+
+<script>
+    /* BTN_TOP */
+    $(function () {
+        $(".top_btn").click(function () {
+            $('html,body').animate({
+                scrollTop: 0
+            }, 400);
+            return false;
+        })
+    });
+</script>
+
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO -->
+    <title>나만의 감성식탁, 또쿡</title>
+    <meta name="description" content="portfolio for mss">
+    <meta name="author" content="mss3662352" />
+    <link rel="shortcut icon" href="./images/cat3.ico" type="image/x-icon">
+    <!-- OGD (Open Graph Data) -->
+    <meta property="og:title" content="나만의 감정식탁, 또쿡" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="배포후 생성된 url" />
+    <meta property="og:img" content="배포후 생성된 img" />
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FONT AWESOME -->
+    <script src="https://kit.fontawesome.com/3e1218b38a.js" crossorigin="anonymous"></script>
+    <!-- SWIPER -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- JAVASCRIPT -->
+    <script type="module" src="/src/main.js" defer></script>
+
+
+</head>
+
+<body>
+
+    <div class="wrap">
+        <div class="visual_main">
+            <div class="heading_banner">
+                <a href="#">
+                    <div>
+                        T
+                    </div>
+                    지금 가입하면 또쿡 레시피북 <b>즉시 증정</b>
+                </a>
+            </div>
+            <header id="header">
+                <div class="header_inner">
+                    <a href="/" class="logo">
+                        TTOCOOK
+                    </a>
+                    <nav>
+                        <ul class="nav_inner">
+                            <li class="dept1 dept_hover">
+                                <a href="/recipe_type">레시피</a>
+                                <ul class="dept2">
+                                    <li>
+                                        <a href="/recipe_type">종류별 레시피</a>
+                                    </li>
+                                    <li>
+                                        <a href="/recipe_ingre" >재료별 레시피</a>
+                                    </li>
+                                    <li>
+                                        <a href="/recipe_create">레시피 등록하기</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dept1">
+                                <a href="/guide">키친가이드</a>
+                            </li>
+                            <li class="dept1 dept_hover">
+                                <a href="#">이벤트</a>
+                                <ul class="dept2">
+                                    <li>
+                                        <a href="#">진행중 이벤트</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">당첨자 발표</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dept1">
+                                <a href="#">공지사항</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="gnb">
+                        <a href="/search">
+                            <img class="search" src="/img/search.png" alt="검색하기">
+                        </a>
+                        <% if (isAuthenticated) { %>
+                            <a href="/logout">
+                                <img class="my_inform" src="/img/arrows.png" alt="로그아웃">
+                            </a>
+                        <% } else { %>
+                            <a href="/login">
+                                <img class="my_inform" src="/img/mypage.png" alt="내 정보관리">
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+            </header>
+            <div class="banner_btn">
+                <button>
+                    공모전 참여하기
+                </button>
+            </div>
+        </div>
+        <div class="best_recipe">
+            <div class="best_recipe_title title">
+                <h1>Best Recipe</h1>
+                <span>사람들에게 가장 많은 사랑을 받은 인기 레시피들이에요.</span>
+            </div>
+            <div class="best_wrap">
+                <div class="best_recipe_wrap">
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <img src="/img/recipe1.jpg" alt="">
+                                <div class="over_title">
+                                    <div class="over_title_inner">
+                                        <span>포슬포슬 맛있는<br />통감자 구이</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <img src="/img/recipe2.jpg" alt="">
+                                <div class="over_title">
+                                    <div class="over_title_inner">
+                                        <span>LG인덕션 레시피<br />사태 떡찜</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <img src="/img/recipe3.jpg" alt="">
+                                <div class="over_title">
+                                    <div class="over_title_inner">
+                                        <span>LG인덕션 레시피<br />고구마 치즈전</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <img src="/img/recipe4.jpg" alt="">
+                                <div class="over_title">
+                                    <div class="over_title_inner">
+                                        <span>가을의 맛<br />전어구이</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <img src="/img/recipe5.jpg" alt="">
+                                <div class="over_title">
+                                    <div class="over_title_inner">
+                                        <span>부드럽고 고소한<br />항정살 데리야끼 구이</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <img src="/img/recipe6.jpg" alt="">
+                                <div class="over_title">
+                                    <div class="over_title_inner">
+                                        <span>담백한 풍미<br />고등어 솥밥</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <img src="/img/recipe7.jpg" alt="">
+                                <div class="over_title">
+                                    <div class="over_title_inner">
+                                        <span>새로운 발견<br />아귀 스테이크</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="choice">
+            <div class="choice_title title">
+                <h1>ttocook's Choice</h1>
+                <span>이번달, 또쿡이 당신에게 추천해드리는 레시피에요.</span>
+            </div>
+            <div class="choice_contents">
+                <div class="choice_wrap">
+                    <div class="swiper mySwiper">
+                        <ul class="swiper-wrapper">
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice1.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>모두가 좋아하는</span>
+                                            <p>고추장 제육볶음</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice2.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>브라운 초고속 블랜더 레시피</span>
+                                            <p>땡초김밥</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice3.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>달콤한 주황빛이 가득</span>
+                                            <p>당근라페와 샌드위치</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice4.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>시원한 맥주와 함께</span>
+                                            <p>웨지감자튀김</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice5.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>짭짤하고 고소한</span>
+                                            <p>명란 연근전</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice6.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>SNS에서 핫한</span>
+                                            <p>밥통 카레</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice7.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>기분 전환 디저트</span>
+                                            <p>노오븐 우유팩 푸딩</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice8.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>노란빛 행복 한 잔</span>
+                                            <p>단호박 주스</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="#">
+                                    <img src="/img/choice9.jpg" alt="">
+                                    <div class="choice_over">
+                                        <div>
+                                            <span>도시락 메뉴로 강추</span>
+                                            <p>[김정은] 보리밥 감태말이</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+        <div class="category">
+            <div class="category_title title">
+                <h1>category</h1>
+                <span>당신의 테마에 어울리는 음식으로 식탁을 채워보세요.</span>
+            </div>
+            <ul class="category_contents_wrap">
+                <li>
+                    <a href="#">
+                        <video src="/img/category.mp4" muted loop autoplay></video>
+                        <div class="category_over">
+                            <span>소중한 사람들에게 대접하는</span>
+                            <p>따뜻한 식탁</p>
+                        </div>
+                        <div class="category_over2">
+                            <div>
+                                집들이 요리 레시피 보러가기
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="/img/baking.jpg" alt="">
+                        <div class="category_over">
+                            <span>고소함이 가득한 나만의</span>
+                            <p>베이킹</p>
+                        </div>
+                        <div class="category_over2">
+                            <div>
+                                베이킹 레시피 <br />보러가기
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="/img/one.jpg" alt="">
+                        <div class="category_over">
+                            <span>혼자여도 소중해</span>
+                            <p>나를 위한 요리</p>
+                        </div>
+                        <div class="category_over2">
+                            <div>
+                                간단 요리 레시피 <br />보러가기
+                            </div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="/img/salad.jpg" alt="">
+                        <div class="category_over">
+                            <span>우리 가족의 건강을 위한</span>
+                            <p>웰빙 레시피</p>
+                        </div>
+                        <div class="category_over2">
+                            <div>
+                                채식 레시피 보러가기
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <footer>
+            <div class="footer_top">
+                <ul class="site_map">
+                    <li><a href="#">고객센터</a></li>
+                    <li><a href="#">이용약관</a></li>
+                    <li><a href="#">개인정보처리방침</a></li>
+                    <li><a href="#">이메일무단수집금지</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    </li>
+                </ul>
+                <a href="/recipe_create">
+                    나만의 레시피 올리기
+                    <div>
+                        <img src="/img/footer_arrow.png" alt="">
+                    </div>
+                </a>
+            </div>
+            <div class="footer_des">
+                <ul>
+                    <li>
+                        (주)또쿡 : 울산광역시 남구 무거동 (960823)
+                    </li>
+                    <li>
+                        <ul>
+                            <li>대표이사 문상석</li>
+                            <li>T.010.4095.2915</li>
+                            <li>F.010.4095.2915</li>
+                            <li>E-MAIL.MSS3662352@naver.com</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <ul>
+                            <li>사업자등록번호 : 010-40-952915</li>
+                            <li>통신판매신고번호:1996-08-23</li>
+                        </ul>
+                    </li>
+                </ul>
+                <button>
+                    고객센터 연결하기
+                    <div>
+                        <img src="/img/arrows.png" alt="">
+                    </div>
+                </button>
+            </div>
+            <div class="footer_bottom">
+                <p>© TTOCOOK CO,. LTD. ALL RIGHTS RESERVED.</p>
+                <h1><span>나만의 감정식탁, </span>TTOCOOK</h1>
+            </div>
+        </footer>
+        <!-- BUTTONMODAL -->
+        <button class="top_btn">
+            <img src="/img/top_btn.png" alt="탑버튼">
+        </button>
+        <div class="recipe_btn_wrap">
+            <button class="recipe_btn">
+                나만의 레시피 올리기
+            </button>
+        </div>
+    </div>
+
+</body>

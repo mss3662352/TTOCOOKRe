@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO -->
+    <title>나만의 감성식탁, 또쿡</title>
+    <meta name="description" content="portfolio for mss">
+    <meta name="author" content="mss3662352" />
+    <link rel="shortcut icon" href="./images/cat3.ico" type="image/x-icon">
+    <!-- OGD (Open Graph Data) -->
+    <meta property="og:title" content="나만의 감정식탁, 또쿡" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="배포후 생성된 url" />
+    <meta property="og:img" content="배포후 생성된 img" />
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FONT AWESOME -->
+    <script src="https://kit.fontawesome.com/3e1218b38a.js" crossorigin="anonymous"></script>
+    <!-- SWIPER -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/sub_header.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- JAVASCRIPT -->
+    <script type="module" src="/src/main.js" defer></script>
+</head>
+
+<body>
+    <header class="sub_header">
+        <div class="header_inner">
+            <a href="/" class="logo">
+                TTOCOOK
+            </a>
+            <nav>
+                <ul class="nav_inner">
+                    <li class="dept1 dept_hover">
+                        <a href="/recipe_type">레시피</a>
+                        <ul class="dept2">
+                            <li>
+                                <a href="/recipe_type">종류별 레시피</a>
+                            </li>
+                            <li>
+                                <a href="/recipe_ingre">재료별 레시피</a>
+                            </li>
+                            <li>
+                                <a href="/recipe_create">레시피 등록하기</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dept1">
+                        <a href="/guide">키친가이드</a>
+                    </li>
+                    <li class="dept1 dept_hover">
+                        <a href="#">이벤트</a>
+                        <ul class="dept2">
+                            <li>
+                                <a href="#">진행중 이벤트</a>
+                            </li>
+                            <li>
+                                <a href="#">당첨자 발표</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dept1">
+                        <a href="#">공지사항</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sub_gnb">
+                <a href="/search">
+                    <img class="search" src="/img/search(green).png" alt="검색하기">
+                </a>
+                <% if (isAuthenticated) { %>
+                    <a href="/logout">
+                        <img class="my_inform" src="/img/arrows.png" alt="로그아웃">
+                    </a>
+                <% } else { %>
+                    <a href="/login">
+                        <img class="my_inform" src="/img/mypage(green).png" alt="내 정보관리">
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+</body>
+
+</html>

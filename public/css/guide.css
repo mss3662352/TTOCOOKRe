@@ -1,0 +1,80 @@
+:root {
+
+    /* COLOR */
+    --accent-color: #868707;
+
+    /* FONT */
+    --font-eng: 'Nanum Myeongjo', serif;
+    --font-ko: 'Nanum Gothic', sans-serif;
+
+    /* SIZE*/
+    --size-max-width: 1080px;
+
+    /* FONT-WEIGNT */
+    --fw5: 500;
+    --fw6: 600;
+    --fw7: 700;
+    --fw8: 800;
+    --fw9: 900;
+
+}
+
+.guide_wrap {
+    width: 100%;
+    max-width: 1080px;
+    height: auto;
+    box-sizing: border-box;
+    padding-top: 70px;
+    margin: 0 auto;
+}
+
+/* TITLE */
+
+.guide_title {
+    width: 400px;
+    margin: 0 auto;
+    text-align: center;
+    font-family: var(--font-eng);
+    padding: 120px 0 70px;
+    border-bottom: 1px solid red;
+}
+
+.guide_title h1 {
+    position: relative;
+    color: var(--accent-color);
+    font-size: 27px;
+    letter-spacing: 3px;
+    font-weight: var(--fw8);
+}
+
+.guide_title h1::after,
+.guide_title h1::before {
+    position: absolute;
+    content: '';
+    width: 2px;
+    height: 15px;
+    background: var(--accent-color);
+    top: 8px;
+}
+
+.guide_title h1::after {
+    right: 55px;
+}
+
+.guide_title h1::before {
+    left: 55px;
+}
+
+.guide_title p {
+    display: block;
+    color: #333;
+    font-weight: var(--fw7);
+    font-size: 15px;
+    letter-spacing: 3px;
+    margin-top: 20px;
+    margin-left: 8px;
+}
+
+.guide_title p span {
+    color: var(--accent-color);
+}
