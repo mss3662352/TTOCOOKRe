@@ -18,7 +18,9 @@
     "path": "^0.12.7"
   },
   "scripts": {
-    "predeploy": "npm build",
-    "deploy": "gh-pages -d build"
+    "start": "node app.js",
+    "build": "echo 'No build step required'",
+    "predeploy": "cmd /c set PATH=%PATH%;C:\\Program Files\\Git\\cmd && npm run build",
+    "deploy": "gh-pages -d public"
   }
 }
