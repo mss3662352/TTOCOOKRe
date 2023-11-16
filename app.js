@@ -318,7 +318,7 @@ app.post('/insert_recipe_steps', uploadForPicture.array('pictures[]'), (req, res
             return;
         }
 
-        res.status(200).json({ success: true });
+        res.redirect('/recipe_create');
     });
 });
 

@@ -356,6 +356,3 @@ function sendSteps(recipeId) {
         },
     });
 }
-function checkRecipe(){
-
-}
