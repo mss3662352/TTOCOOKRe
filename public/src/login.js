@@ -1,3 +1,11 @@
+$(document).ready(function () {
+  $('#pw').keypress(function (e) {
+      if (e.which === 13) { 
+          check();
+      }
+  });
+});
+
 $(function () {
   const originalIdIconSrc = '/img/original_id.png';
   const originalPWIconSrc = '/img/original_pw.png';

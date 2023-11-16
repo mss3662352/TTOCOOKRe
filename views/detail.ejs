@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SEO -->
+  <title>나만의 감성식탁, 또쿡</title>
+  <meta name="description" content="portfolio for yebin">
+  <meta name="author" content="kang yebin" />
+  <link rel="shortcut icon" href="./images/cat3.ico" type="image/x-icon">
+  <!-- OGD (Open Graph Data) -->
+  <meta property="og:title" content="나만의 감정식탁, 또쿡" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="배포후 생성된 url" />
+  <meta property="og:img" content="배포후 생성된 img" />
+  <!-- GOOGLE FONT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+    rel="stylesheet">
+  <!-- FONT AWESOME -->
+  <script src="https://kit.fontawesome.com/3e1218b38a.js" crossorigin="anonymous"></script>
+  <!-- SWIPER -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/detail.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <!-- JAVASCRIPT -->
+  <script src="/src/detail.js" defer></script>
+</head>
+
+<body>
+
+  <div id="SubHeader">
+    <%- include('sub_header', { isAuthenticated: isAuthenticated }) %>
+  </div>
+  <div class="detail_wrap">
+    <div class="detail_main">
+      <img name="thumbnail" src="" alt="">
+    </div>
+    <div class="detail_title">
+      <div class="title_wrap">
+        <div class="title">
+          <span name="beauty"></span>
+          <p name="title"></p>
+        </div>
+        <div class="detail_icon">
+          <button class="pick" onclick="togglePick()">
+            <img id="pickImage" src="../img/pick.png" alt="찜하기">
+            <span>찜하기</span>
+          </button>
+          <button class="share">
+            <img src="../img/share.png" alt="공유하기">
+            <span>공유하기</span>
+          </button>
+        </div>
+      </div>
+      <div class="title_inform">
+        <div class="class">
+          <p>난이도</p>
+          <span name="level"></span>
+        </div>
+        <div class="time">
+          <p>소요시간</p>
+          <span name="time"></span>
+        </div>
+        <div class="star">
+          <p>평균별점</p>
+          <ul>
+            <li><img src="../img/star_fill.png" alt=""></li>
+            <li><img src="../img/star_fill.png" alt=""></li>
+            <li><img src="../img/star_fill.png" alt=""></li>
+            <li><img src="../img/star_half.png" alt=""></li>
+            <li><img src="../img/star.png" alt=""></li>
+            <li>
+              <span style="color: #bbb; font-size: 12px;">(3.5)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="title_des">
+        <div class="me">
+          <div class="my_icon">
+            <img src="../img/mypage(detail).png" alt="내 아이콘">
+          </div>
+          <span class="my_name" name="nickname"></span>
+        </div>
+        <div class="my_des" name="introduction">
+          여유로운 주말 아침, 기분을 산뜻하게 만들어 줄 브런치와 함께라면 더할 나위 없겠죠. 폭신폭신한 프렌치 토스트 옆에 달콤한 바나나를 함께 놓아 두면 더 근사한 브런치가 된답니다. 바나나를 한 번
+          구워 풍미를 살리는 게 포인트예요. 달콤한 디저트 메뉴로도 안성맞춤이랍니다!
+        </div>
+      </div>
+      <div class="more_recipe_wrap">
+        <button class="more_recipe">
+          <p>
+            '<span name="nickname">오후의 햇살</span>'님 레시피 더 보러가기
+          </p>
+          <img src="../img/recipe_arrow.png" alt="">
+        </button>
+      </div>
+    </div>
+  </div><!-- detail_wrap -->
+  <div class="detail_contents">
+    <div class="ingre">
+      <h1 class="ingre_title">재료</h1>
+      <div class="ingre_list_wrap">
+        <ul class="ingre_list">
+          <li>
+            <p>통식빵(또는 기본 식빵 2조각)</p>
+            <span>1/3개</span>
+          </li>
+          <!-- 레시피 재료 -->
+        </ul>
+        <div class="ingre_comment">
+          <h2>
+            재료 Comment
+          </h2>
+          <p name="ingre_tip">
+          </p>
+          <a href="../html/join.html">
+              <img src="../img/detail_banner.jpg" alt="">
+              <button><span>TTOCOOK</span> 회원가입 하러가기 <img src="../img/recipe_arrow.png" alt=""></button>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="recipe">
+      <h1 class="recipe_title">레시피</h1>
+      <div class="recipe_list_wrap">
+        <ul class="recipe_list">
+          <li>
+            <div class="recipe_img">
+              <img src="../img/detail2.jpg" alt="레시피">
+            </div>
+            <div class="recipe_detail_des">
+              <h2>Step 1</h2>
+              <p>
+                통식빵은 두툼하게 자르고, 바나나는 껍질을 벗겨 길게 반으로 자른 후 
+                2등분 해주세요.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  /* BTN_TOP */
+  $(function () {
+    $(".top_btn").click(function () {
+      $('html,body').animate({
+        scrollTop: 0
+      }, 400);
+      return false;
+    })
+  });
+</script>
+
+</html>

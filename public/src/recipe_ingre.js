@@ -70,7 +70,8 @@ function renderRecipes(data) {
         var level = convertLevelToText(recipe.level);
         var recipeItem = `
             <li>
-                <a href="#">
+                <a href="#" class="recipe-item" data-recipe-id="${recipe.id}">
+                    <input type="hidden" value="${recipe.id}">
                     <div class="recipe_thum">
                         <img src="${thumbnailPath}" alt="">
                         <div class="thum_over"></div>
@@ -99,6 +100,14 @@ function renderRecipes(data) {
 
         contentList.append(recipeItem);
     });
+    $('.recipe-item').on('click', function (event) {
+        event.preventDefault();
+        var recipeId = $(this).data('recipe-id');
+        detailRecipe(recipeId);
+    });
+}
+function detailRecipe(recipe_id){
+    window.location.href = '/detailRecipe?id=' + recipe_id;
 }
 function convertLevelToText(level) {
     switch (level) {

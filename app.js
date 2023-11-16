@@ -31,7 +31,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: secret, // 세션을 암호화하는 데 사용되는 키
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: { secure: false } // HTTPS가 아닌 환경에서도 동작하도록 설정
 }));
 app.use((req, res, next) => {
     // isAuthenticated 변수를 모든 뷰에서 사용할 수 있도록 res.locals에 추가
@@ -42,8 +43,8 @@ app.use((req, res, next) => {
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = 'public/uploads';
-        // uploads 디렉토리가 없으면 생성
+        const uploadDir = 'public/uploads/thumbnail';
+        // 디렉토리가 없으면 생성
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
@@ -54,6 +55,21 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: storage });
+
+const storageForPicture = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = 'public/uploads/pictures';
+        // 디렉토리가 없으면 생성
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const uploadForPicture = multer({ storage: storageForPicture });
 
 app.get('/', (req, res) => {
     const isAuthenticated = req.session.user ? true : false;
@@ -240,8 +256,11 @@ app.get('/getIngre', (req, res) => {
 
 // 이미지와 데이터를 함께 전송받아 레시피 등록 처리
 app.post('/insert_recipe', upload.single('thum'), (req, res) => {
-    const thumbnailPath = req.file.path;
+    const user = req.session.user;
+    const userId = user.id;
 
+    const thumbnailPath = req.file.path;
+    console.log('req.file.path : '+ req.file.path)
     // 나머지 레시피 데이터
     const title = req.body.title;
     const beauty = req.body.beauty;
@@ -252,57 +271,121 @@ app.post('/insert_recipe', upload.single('thum'), (req, res) => {
     const ingre_tip = req.body.ingre_tip;
     const introduction = req.body.introduction;
     const tip = req.body.tip;
-
-    //재료 부분
-    const ingredients = req.body.ingredients;
-    //stpe 부분
-    let steps;
-    try {
-        steps = JSON.parse(req.body.steps);
-    } catch (e) {
-        console.error('Error parsing steps:', e);
-        res.status(400).send('Invalid steps data');
-        return;
-    };
-    // MySQL에 데이터 삽입 쿼리 수행
+    
     const sql = `INSERT INTO recipe (user_id, beauty, title, thumbnail, ingredient, recipe_type, time, level, ingre_tip, introduction, tip) 
-        VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    db.query(sql, [beauty, title, thumbnailPath, ingredient, recipe_type, time, level, ingre_tip, introduction, tip], (error, results, fields) => {
+    db.query(sql, [userId, beauty, title, thumbnailPath, ingredient, recipe_type, time, level, ingre_tip, introduction, tip], (error, results, fields) => {
         if (error) {
             console.error('MySQL 오류:', error);
             res.status(500).send('서버 오류');
             return;
         }
-         // 삽입된 레시피의 ID 가져오기
         const recipeId = results.insertId;
 
+        res.status(200).json({ success: true, recipeId: recipeId });
+    });
+});
 
-        // recipe_ingredients 테이블에 재료 데이터 삽입
-        const ingreInsertQuery = `INSERT INTO recipe_ingredients (recipe_id, name, amount) VALUES ?`;
-        const ingreValues = ingredients.map(ingre => [recipeId, ingre.name, ingre.amount]);
+app.post('/insert_recipe_ingredients', (req, res) => {
+    const recipeId =  req.body.recipeId;
+    const ingredients = req.body.ingredient;
 
-        db.query(ingreInsertQuery, [ingreValues], (ingreError, ingreResults) => {
-            if (ingreError) {
-                console.error('MySQL 재료 삽입 오류:', ingreError);
-                res.status(500).send('서버 오류');
+    // 재료 부분
+    const ingreInsertQuery = `INSERT INTO recipe_ingredients (recipe_id, name, amount) VALUES ?`;
+    const ingreValues = ingredients.map(ingre => [recipeId, ingre.name, ingre.amount]);
+
+    db.query(ingreInsertQuery, [ingreValues], (ingreError, ingreResults) => {
+        if (ingreError) {
+            console.error('MySQL 재료 삽입 오류:', ingreError);
+            res.status(500).send('서버 오류');
+            return;
+        }
+
+        res.status(200).json({ success: true, recipeId: recipeId });
+    });
+});
+app.post('/insert_recipe_steps', uploadForPicture.array('pictures[]'), (req, res) => {
+    const recipeId = req.body.recipeId;
+    const contents = req.body.contents;
+    const stepInsertQuery = `INSERT INTO step (recipe_id, content, picture, ord) VALUES ?`;
+    const stepValues = contents.map((content, index) => [recipeId, content, req.files[index].path, index + 1]);
+    
+    db.query(stepInsertQuery, [stepValues], (stepError, stepResults) => {
+        if (stepError) {
+            console.error('MySQL 스텝 삽입 오류:', stepError);
+            res.status(500).send('서버 오류');
+            return;
+        }
+
+        res.status(200).json({ success: true });
+    });
+});
+
+app.get('/detailRecipe', (req, res) => {
+    const isAuthenticated = req.session.user ? true : false;
+    const recipeId = req.query.id;
+
+    res.render('detail', { isAuthenticated, recipeId});
+})
+app.get('/getDetail', (req, res) => {
+    const isAuthenticated = req.session.user ? true : false;
+    const recipeId = req.query.id;
+
+    // 레시피 정보 쿼리
+    const recipeQuery = `
+        SELECT r.id, r.user_id, u.nickname, beauty, title, thumbnail, ingredient, recipe_type, time, level, ingre_tip, introduction, tip, good, view, r.created_at
+        FROM recipe r
+        LEFT JOIN 
+        users u ON r.user_id = u.id
+        WHERE r.id = ?
+    `;
+    // 재료 정보 쿼리
+    const ingredientQuery = `
+        SELECT name, amount
+        FROM recipe_ingredients
+        WHERE recipe_id = ?
+    `;
+    // 단계 정보 쿼리
+    const stepQuery = `
+        SELECT content, picture, ord
+        FROM step
+        WHERE recipe_id = ?
+        ORDER BY ord
+    `;
+     // 병렬로 쿼리 실행
+     db.query(recipeQuery, [recipeId], (error, recipeResults) => {
+        if (error) {
+            console.error('Error fetching recipe:', error);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
+        // 재료 정보 가져오기
+        db.query(ingredientQuery, [recipeId], (ingredientError, ingredientResults) => {
+            if (ingredientError) {
+                console.error('Error fetching ingredients:', ingredientError);
+                res.status(500).send('Internal Server Error');
                 return;
             }
-        });
 
-        const insertStepQuery = `INSERT INTO step (recipe_id, content, picture, ord) VALUES ?`;
-        const stepValues = steps.map((step, index) => [recipeId, step.content, step.picture, index + 1]);
-        db.query(insertStepQuery, [stepValues], (stepError, stepResults) => {
-            if (stepError) {
-                console.error('MySQL 스텝 삽입 오류:', stepError);
-                res.status(500).send('서버 오류');
-                return;
-            }
+            // 단계 정보 가져오기
+            db.query(stepQuery, [recipeId], (stepError, stepResults) => {
+                if (stepError) {
+                    console.error('Error fetching steps:', stepError);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
 
-            res.status(200).send('레시피가 성공적으로 등록되었습니다.');
+                const recipe = recipeResults[0];
+                const ingredients = ingredientResults;
+                const steps = stepResults;
+
+                // 결과를 클라이언트에 전송
+                res.json({isAuthenticated, recipe, ingredients, steps });
+            });
         });
     });
-
 });
 
 app.get('/guide', (req, res) => {
@@ -325,6 +408,6 @@ app.use((err, req, res, next) => {
 
 
 //port cnosole.log
-// app.listen(port, () => {
-//     console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
-// });
+app.listen(port, () => {
+    console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
+});
