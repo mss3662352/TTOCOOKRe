@@ -80,17 +80,32 @@
                     <img class="search" src="/img/search(green).png" alt="검색하기">
                 </a>
                 <% if (isAuthenticated) { %>
-                    <a href="/logout">
-                        <img class="my_inform" src="/img/arrows.png" alt="로그아웃">
+                    <a href="">
+                        <img class="my_inform" src="/img/mypage(detail).png" alt="마이페이지">
+                    </a>
+                    <a href="/logout" class="logout">
+                        <p>Logout</p>
                     </a>
                 <% } else { %>
-                    <a href="/login">
-                        <img class="my_inform" src="/img/mypage(green).png" alt="내 정보관리">
+                    <a href="#" class="login">
+                        <p>LogIn</p>
+                    </a>
+                    <a href="/join" class="join">
+                        <p>Join</p>
                     </a>
                 <% } %>
             </div>
         </div>
     </header>
 </body>
-
+<script>
+    $(function() {
+        $('.login').on('click', function(){
+            // 현재 페이지 URL 저장
+            const returnUrl = encodeURIComponent(window.location.href);
+            // 로그인 페이지로 이동
+            window.location.href = '/login?returnTo=' + returnUrl;
+        })
+    });
+</script>
 </html>

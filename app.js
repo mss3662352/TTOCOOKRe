@@ -37,6 +37,10 @@ app.use(session({
 app.use((req, res, next) => {
     // isAuthenticated 변수를 모든 뷰에서 사용할 수 있도록 res.locals에 추가
     res.locals.isAuthenticated = req.session.user ? true : false;
+
+    // 세션에서 사용자 ID를 가져오기
+    res.locals.sessionUserId = req.session.user ? req.session.user.id : null;
+
     next(); // 다음 미들웨어로 이동
 });
 
@@ -71,11 +75,28 @@ const storageForPicture = multer.diskStorage({
 });
 const uploadForPicture = multer({ storage: storageForPicture });
 
+const storageForReply = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = 'public/uploads/reply';
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const uploadForReply = multer({ storage: storageForReply });
+
 app.get('/', (req, res) => {
     const isAuthenticated = req.session.user ? true : false;
-    res.render('index', { isAuthenticated });
+    res.render('index', { isAuthenticated: isAuthenticated });
 });
 app.get('/login', (req, res) => {
+     // 현재 페이지의 URL을 세션에 저장
+     req.session.returnTo = req.query.returnTo || '/';
+
     const isAuthenticated = req.session.user ? true : false;
     res.render('login', { isAuthenticated: isAuthenticated });
 });
@@ -91,9 +112,15 @@ app.post('/userLogin', (req, res) => {
         if (results.length > 0) {
             // 로그인 성공 시 세션에 사용자 정보 저장
             req.session.user = results[0];
-            res.json({ success: true, message: 'Login 성공' });
+
+            // 리디렉션할 URL이 세션에 저장되어 있으면 해당 페이지로 이동, 없으면 홈페이지로 이동
+            const redirectUrl = req.session.returnTo || '/';
+            res.json({ success: true, message: 'Login 성공', redirectUrl: redirectUrl });
+
+            // 세션에 저장된 리디렉션 URL 초기화
+            req.session.returnTo = null;
         } else {
-            res.status(401).json({ success: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' });
+            res.status(200).json({ success: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' });
         }
       }
     });
@@ -105,7 +132,8 @@ app.get('/logout', (req, res) => {
             console.error('세션 파괴 중 오류 발생:', err);
             res.status(500).json({ success: false, message: '내부 서버 오류' });
         } else {
-            res.redirect('/login');
+            
+            res.redirect('/');
         }
     });
 });
@@ -387,7 +415,67 @@ app.get('/getDetail', (req, res) => {
         });
     });
 });
+app.get('/getRecipeReply', (req, res) =>{
+    const recipeId = req.query.id;
+    const isAuthenticated = req.session.user ? true : false;
+    const sessionUserId = req.session.user ? req.session.user.id : null;
 
+    // 레시피 정보 쿼리
+    const replyQuery = `
+        SELECT rr.id, rr.recipe_id, rr.user_id, u.nickname,  rr.content, rr.picture, rr.rating, rr.created_at, rr.updated_at 
+        from recipe_reply rr 
+        join users u on u.id = rr.user_id 
+        join recipe r on r.id = rr.recipe_id
+        where r.id = 123
+        order by rr.id desc
+    `;
+    const starQuery =`
+        SELECT ROUND(SUM(rating) / COUNT(rating) / 2, 2) AS average_rating, count(rating) AS count_rating
+        FROM recipe_reply rr
+        JOIN recipe r ON r.id = rr.recipe_id
+        where r.id = ?
+    `
+    db.query(replyQuery, [recipeId], (error, reply) => {
+        if (error) {
+            console.error('Error fetching recipe:', error);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        db.query(starQuery, [recipeId], (error, starValue) => {
+            if (error) {
+                console.error('Error fetching recipe:', error);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+            res.json({isAuthenticated, sessionUserId, reply, starValue})
+        })
+    })
+})
+app.post('/insert_reply', uploadForReply.single('picture'), (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const recipeId = req.body.recipeId;
+    const rating = req.body.rating;
+    const content = req.body.content;
+    const picturePath = req.file ? req.file.path : null;
+    console.log('picturePath : ' + picturePath)
+    if (!userId) {
+        return res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
+    }
+    const insertQuery = `
+        INSERT INTO recipe_reply (user_id, recipe_id, content, picture, rating)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(insertQuery, [userId, recipeId, content, picturePath, rating], (error, results) => {
+    if (error) {
+      console.error('댓글 삽입 오류:', error);
+      return res.status(500).json({ success: false, message: '서버 오류' });
+    }
+
+    // 성공했다고 가정하고 응답을 보냅니다.
+    res.status(200).json({ success: true, message: '댓글이 성공적으로 등록되었습니다.' });
+  });
+});
 app.get('/guide', (req, res) => {
     const isAuthenticated = req.session.user ? true : false;
     res.render('guide', { isAuthenticated: isAuthenticated });

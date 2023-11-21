@@ -1,20 +1,29 @@
 /* header active class */
+const isAuthenticated = $('.isAuthenticated').val()
 $(window).scroll(function () {
     if ($(window).scrollTop() > 50) {
         $('header, .top_btn, .recipe_btn').addClass('active');
-        $('.gnb .my_inform').attr('src', '/img/mypage(black).png');
         $('.gnb .search').attr('src', '/img/search(black).png');
         $('header .logo').addClass('active');
         $('nav ul .dept1 a').addClass('active');
+        $('.gnb p').addClass('active');
+        $('.gnb .my_inform').attr('src', '/img/mypage(detail).png');
     } else {
         $('header, .top_btn, .recipe_btn').removeClass('active');
         $('header .logo').removeClass('active');
         $('nav ul .dept1 a').removeClass('active');
-        $('.gnb .my_inform').attr('src', '/img/mypage.png');
         $('.gnb .search').attr('src', '/img/search.png');
+        $('.gnb p').addClass('active');
+        $('.gnb .my_inform').attr('src', '/img/mypage(detail).png');
     }
 });
-
+$(function () {
+    $('.login').on('click', function(){
+        const returnUrl = encodeURIComponent(window.location.href);
+        // 로그인 페이지로 이동
+        window.location.href = '/login?returnTo=' + returnUrl;
+    })
+})
 $(function () {
     $('.dept_hover, .dept2').hover(
         function () {
@@ -29,12 +38,14 @@ $(function () {
 $(function () {
     $('#header').hover(
         function () {
-            $('.gnb .my_inform').attr('src', '/img/mypage(black).png');
-            $('.gnb .search').attr('src', '/img/search(black).png');
+            $('.gnb .search').attr('src', '/img/search(green).png');
+            $('.gnb p').addClass('active');
+            $('.gnb .my_inform').attr('src', '/img/mypage(detail).png');
         },
         function () {
-            $('.gnb .my_inform').attr('src', '/img/mypage.png');
             $('.gnb .search').attr('src', '/img/search.png');
+            $('.gnb p').removeClass('active');
+            $('.gnb .my_inform').attr('src', '/img/mypage(detail).png');
         }
     );
 });

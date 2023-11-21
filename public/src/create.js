@@ -1,14 +1,23 @@
-$(document).ready(function () {
+$(document).ready(function() {
+
     $('#thum').on("change", imgFile_thum);
     $(document).on("change", '.pictures', function (e) {
         imgFile_step(e, $(this));
     });
-    // showThum();
+    
     getType();
     getIngre();
     manageIngres();
     manageSteps();
-    insertRecipe()
+    
+    $(document).on("click", '.done', function(){
+        if(checkRecipe() === false){
+            console.log('실패애오')
+        }else if(checkRecipe() === true){
+            insertRecipe()
+            console.log('성공이애오오')
+        }
+    });
 })
 
 function getType(){
@@ -150,11 +159,6 @@ function manageSteps() {
         if ($('.list').length > 2) {
             $('.step_down').css('display', 'block');
         }
-
-        // // 이미지 업로드 이벤트 처리
-        // $('.list_input').on("change", function (e) {
-        //     imgFile_step(e, $(this));
-        // });
     });
     
     // 레시피 순서 삭제 버튼 클릭 이벤트
@@ -179,67 +183,125 @@ function manageSteps() {
     });
 }
 function insertRecipe(){
-    // 등록 버튼 클릭 시의 이벤트 리스너
-    $('.done').click(function () {
-      // 사용자가 입력한 데이터 수집
-        const formData = new FormData();
-        const thumFile = $('#thum')[0].files[0];
-        const beuaty = $('input[name="beauty"]');
-        const title =  $('input[name="title"]')
-        const introduction = $('textarea[name="introduction"]');
-        formData.append('thum', thumFile);
-        formData.append('beauty', beuaty.val());
-        formData.append('title', title.val());
-        formData.append('ingredient', $('select[name="ingredient"]').val());
-        formData.append('recipe_type', $('select[name="recipe_type"]').val());
-        formData.append('time', $('select[name="time"]').val());
-        formData.append('level', $('select[name="level"]').val());
-        formData.append('ingre_tip', $('textarea[name="ingre_tip"]').val());
-        formData.append('introduction', introduction.val());
-        formData.append('tip', $('textarea[name="tip"]').val());
+    // 사용자가 입력한 데이터 수집
+    const formData = new FormData();
+    const thumFile = $('#thum')[0].files[0];
+    formData.append('thum', thumFile);
+    formData.append('beauty', $('input[name="beauty"]').val());
+    formData.append('title', $('input[name="title"]').val());
+    formData.append('ingredient', $('select[name="ingredient"]').val());
+    formData.append('recipe_type', $('select[name="recipe_type"]').val());
+    formData.append('time', $('select[name="time"]').val());
+    formData.append('level', $('select[name="level"]').val());
+    formData.append('ingre_tip', $('textarea[name="ingre_tip"]').val());
+    formData.append('introduction', $('textarea[name="introduction"]').val());
+    formData.append('tip', $('textarea[name="tip"]').val());
 
-       if(!thumFile){
-        alert('대표 사진을 등록해주세요')
-        thumFile.focus();
-        return false;
-       }
-       if(!beuaty.val()){
-        alert('레시피 별칭을 입력해주세요')
-        beuaty.focus()
-        return false;
-       }
-       if(!title.val()){
-        alert('레시피 이름을 입력해주세요')
-        title.focus()
-        return false;
-       }
-       if(!introduction.val()){
-        alert('레시피 소개를 입력해주세요')
-        introduction.focus()
-        return false;
-       }
-        $.ajax({
-            type: 'POST',
-            url: '/insert_recipe',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                console.log(response + "성공");
-                const recipeId = response.recipeId;
-                sendIngredients(recipeId);
-                sendSteps(recipeId);
-            },
-            error: function (error) {
-                console.error('Ajax 오류:', error);
-            },
-        });
+    $.ajax({
+        type: 'POST',
+        url: '/insert_recipe',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log(response + "성공");
+            const recipeId = response.recipeId;
+            sendIngredients(recipeId);
+            sendSteps(recipeId);
+        },
+        error: function (error) {
+            console.error('insert_recipe Ajax 오류:', error);
+        },
     });
 }
 function sendIngredients(recipeId) {
     const ingreItems = $('.ingre');
     const ingredientsData = [];
+
+    ingreItems.each(function (index) {
+        const ingreName = $(this).find('input[type="text"]').eq(0).val();
+        const ingreAmount = $(this).find('input[type="text"]').eq(1).val();
+
+        //값을 key:value로 push하여 배열에 저장
+        ingredientsData.push({
+            name: ingreName,
+            amount: ingreAmount
+        })
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: '/insert_recipe_ingredients',
+        data: JSON.stringify({recipeId: recipeId, ingredient: ingredientsData }),  // 변경된 부분
+        contentType: 'application/json',
+        success: function (response) {
+            console.log(response + " ingredients 성공");
+        },
+        error: function (error) {
+            console.error('ingredients Ajax 오류:', error);
+        },
+    });
+}
+function sendSteps(recipeId) {
+    const formData = new FormData();
+
+    $('.list').each(function (index) {
+        const stepContent = $(this).find('textarea').val();
+        const stepFile = $(this).find('.pictures')[0].files[0];
+        // const stepPicture = stepFile ? stepFile.name : ''; // 파일이 없을 경우 빈 문자열
+        formData.append('contents[]', stepContent);
+        formData.append('pictures[]', stepFile);   
+    });
+
+    // 레시피 ID를 formData에 추가
+    formData.append('recipeId', recipeId);
+
+    $.ajax({
+        type: 'POST',
+        url: '/insert_recipe_steps',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log(response + " 성공");
+            alert("레시피 등록이 완료되었습니다 :)");
+            window.location.href = '/recipe_type';
+        },
+        error: function (error) {
+            console.error('insert_recipe_steps Ajax 오류:', error);
+        },
+    });
+}
+function checkRecipe(){
     let hasIngredients = false; // 재료 입력 여부 체크
+    let hasStep = false; //step 입력 여부 체크
+
+    const thumFile = $('#thum')[0].files[0];
+    const beuaty = $('input[name="beauty"]');
+    const title =  $('input[name="title"]')
+    const introduction = $('textarea[name="introduction"]');
+
+    if(!thumFile){
+        alert('대표 사진을 등록해주세요')
+        // $('html, body').scrollTop($('#thum').offset().top);
+        return false;
+    }
+    if(!beuaty.val()){
+        alert('레시피 별칭을 입력해주세요')
+        beuaty.focus()
+        return false;
+    }
+    if(!title.val()){
+        alert('레시피 이름을 입력해주세요')
+        title.focus()
+        return false;
+    }
+    if(!introduction.val()){
+        alert('레시피 소개를 입력해주세요')
+        introduction.focus()
+        return false;
+    }
+    const ingreItems = $('.ingre');
 
     ingreItems.each(function (index) {
         const ingreName = $(this).find('input[type="text"]').eq(0);
@@ -267,51 +329,23 @@ function sendIngredients(recipeId) {
             hasIngredients = false;
             return false; // 현재 루프 종료
         }
-
-        // 실제로 값을 가진 경우에만 추가
-        ingredientsData.push({
-            name: ingreName.val(),
-            amount: ingreAmount.val()
-        })
         hasIngredients = true;
     });
 
-    // 모든 재료가 비어있는 경우 알림창 띄우고 레시피 등록 중단
+    //한 개도 없을 경우 return
     if (!hasIngredients) {
-        return;
+        return false;
     }
-
-    $.ajax({
-        type: 'POST',
-        url: '/insert_recipe_ingredients',
-        data: JSON.stringify({recipeId: recipeId, ingredient: ingredientsData }),  // 변경된 부분
-        contentType: 'application/json',
-        success: function (response) {
-            console.log(response + " ingredients 성공");
-        },
-        error: function (error) {
-            console.error('Ajax 오류:', error);
-        },
-    });
-}
-function sendSteps(recipeId) {
-    const formData = new FormData();
-    // 단계 정보 수집
-    let hasEmptyStep = false;
 
     $('.list').each(function (index) {
         const stepContent = $(this).find('textarea').val();
         const stepFile = $(this).find('.pictures')[0].files[0];
         // const stepPicture = stepFile ? stepFile.name : ''; // 파일이 없을 경우 빈 문자열
 
-        console.log('stepFile :'+ stepFile)
-        console.log('stepFile.name :'+ stepFile.name)
-        console.log('stepFile.path : '+ stepFile.path)
-        
         if (!stepContent.trim() && !stepFile) {
             alert('비어있는 Step이 있습니다.');
             $(this).find('textarea').focus();
-            hasEmptyStep = false;
+            hasStep = false;
             return false; // 루프 중단
         }
 
@@ -319,7 +353,7 @@ function sendSteps(recipeId) {
         if (!stepContent.trim() && stepFile) {
             alert('Step을 작성해 주세요.');
             $(this).find('textarea').focus();
-            hasEmptyStep = false;
+            hasStep = false;
             return false; // 루프 중단
         }
 
@@ -327,32 +361,15 @@ function sendSteps(recipeId) {
         if (stepContent.trim() && !stepFile) {
             alert('Step에 요리 사진을 넣어주세요.');
             $(this).find('textarea').focus();
-            hasEmptyStep = false;
+            hasStep = false;
             return false; // 루프 중단
         }
-        formData.append('contents[]', stepContent);
-        formData.append('pictures[]', stepFile);   
-        hasEmptyStep = true;
+        hasStep = true;
     });
-
-    if (!hasEmptyStep) {
-        return;
+    //한 개도 없을 경우 return
+    if (!hasStep) {
+        return false;
     }
-    // 레시피 ID를 formData에 추가
-    formData.append('recipeId', recipeId);
-
-    $.ajax({
-        type: 'POST',
-        url: '/insert_recipe_steps',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function (response) {
-            console.log(response + " 성공");
-            alert("레시피 등록이 완료되었습니다 :)");
-        },
-        error: function (error) {
-            console.error('Ajax 오류:', error);
-        },
-    });
+    
+    return true;
 }

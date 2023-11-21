@@ -203,14 +203,15 @@ nav .dept2 li a {
 /* GNB */
 .sub_gnb {
     display: flex;
-    gap: 35px;
+    gap: 25px;
     height: 100%;
     align-items: center;
-    width: 100px;
+    width: 170px;
 }
 
 .sub_gnb a {
-    display: block;
+    display: flex; /* 추가된 부분 */
+    align-items: center; /* 추가된 부분 */
     width: 33px;
     height: 33px;
     opacity: 0.7;
@@ -230,4 +231,9 @@ nav .dept2 li a {
     width: 100%;
     height: 100%;
 }
-
+.sub_gnb a p{
+    color: #868707; 
+    font-size: 18px;
+    font-weight: 700;
+    font-family: var(--font-eng);
+}

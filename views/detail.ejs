@@ -51,7 +51,7 @@
         </div>
         <div class="detail_icon">
           <button class="pick" onclick="togglePick()">
-            <img id="pickImage" src="../img/pick.png" alt="찜하기">
+            <img id="pickImage" src="/img/pick.png" alt="찜하기">
             <span>찜하기</span>
           </button>
           <button class="share">
@@ -69,16 +69,11 @@
           <p>소요시간</p>
           <span name="time"></span>
         </div>
-        <div class="star">
+        <div>
           <p>평균별점</p>
-          <ul>
-            <li><img src="../img/star_fill.png" alt=""></li>
-            <li><img src="../img/star_fill.png" alt=""></li>
-            <li><img src="../img/star_fill.png" alt=""></li>
-            <li><img src="../img/star_half.png" alt=""></li>
-            <li><img src="../img/star.png" alt=""></li>
-            <li>
-              <span style="color: #bbb; font-size: 12px;">(3.5)</span>
+          <ul class='star_review_avg'>
+            <li style="width: 100px;">
+              <span class="star_number" style="color: #bbb; font-size: 12px;"></span>
             </li>
           </ul>
         </div>
@@ -133,22 +128,178 @@
       <h1 class="recipe_title">레시피</h1>
       <div class="recipe_list_wrap">
         <ul class="recipe_list">
-          <li>
-            <div class="recipe_img">
-              <img src="../img/detail2.jpg" alt="레시피">
-            </div>
-            <div class="recipe_detail_des">
-              <h2>Step 1</h2>
-              <p>
-                통식빵은 두툼하게 자르고, 바나나는 껍질을 벗겨 길게 반으로 자른 후 
-                2등분 해주세요.
-              </p>
-            </div>
-          </li>
         </ul>
+        <div class="recipe_tip">
+          <h1 class="recipe_tip_title">
+            이 레시피에 더하는 맛있는 <span>Tip !</span>
+          </h1>
+          <p class="tip_des" name="tip_des">
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="comment_wrap">
+      <div class="comment_title">
+        <div>
+          <p>Review</p>
+          <span class="review_count"></span>
+          <ul class="star_review_avg">
+            <li></li>
+          </ul>
+        </div>
+        <button class="write_review">리뷰쓰기</button>
+      </div>
+      <div class="photo_wrap">
+        <div class="photo_btn_wrap">
+          <div>
+            <p>포토 리뷰</p>
+            <span></span>
+          </div>
+          <button>포토 리뷰 더보기</button>
+        </div>
+        <div class="swiper photo_swiper">
+          <div class="swiper-wrapper">
+            <!-- 스와이퍼 이미지 -->
+          </div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+      </div>
+      <ul class="comment_list">
+        <div class="answer_wrap">
+          <div class="answer">
+            <div class="answer_title">
+              <div>
+                <div class="title_img">
+                  <img src="/img/mypage(detail).png" alt="">
+                </div>
+                <p>오후의 햇살</p>
+              </div>
+              <span>2023-11-13</span>
+            </div>
+            <p>네~ 식용유도 사용가능하세요! 하지만 버터로 하시면 더 풍미가 좋기 때문에 추천드려요:)</p>
+            <div>
+              <button>수정</button>
+              <button>삭제</button>
+            </div>
+          </div>
+          <div class="answer_write">
+            <div class="answer_write_inner">
+              <p>로그인 해주세요 :)</p>
+              <div>
+                <textarea cols="30" rows="10" placeholder="타인을 배려 하는 마음을 담아 댓글을 달아주세요."></textarea>
+                <button>등록</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="more_comment">
+          <button>댓글 더보기</button>
+        </div>
+      </ul>
+      <div class="my_star">
+        <div>
+          <p>나의 별점</p>
+          <span class="star">
+            ★★★★★
+            <span style="width : 100%">★★★★★</span>
+            <input type="range" oninput="drawStar(this)" value="10" step="1" min="0" max="10" name="rating">
+          </span>
+        </div>
+        <span>
+          <img src="/img/warning.png" alt="">
+          드래그하여 레시피에 별점을 줄 수 있습니다.
+        </span>
+      </div>
+      <div class="my_comment">
+        <label for="file" class="my_comment_img">
+          <input type="file" id="file" name="reply_img">
+          <div id="reply_area">
+            <img src="/img/plus.png" alt="" class="addPic">
+          </div>
+        </label>
+        <div>
+          <textarea name="mycomment" id="myComment" cols="30" rows="3" 
+            placeholder="레시피에 대한 후기나 궁금한 점을 적어주세요. "></textarea>
+          <button id="reply_button">리뷰 등록</button>
+        </div>
       </div>
     </div>
   </div>
+  <div class="photo_detail_modal_wrap">
+    <div class="photo_detail_modal">
+      <div class="swiper_par" style="position: relative;">
+        <button class="modal_close">
+          x
+        </button>
+        <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper modalSwiper2">
+          <div class="swiper-wrapper">
+            <!-- 스와이퍼 -->
+          </div>
+        </div>
+        <div class="swiper-button-next .modal-swiper-button-next"></div>
+        <div class="swiper-button-prev .modal-swiper-button-prev"></div>
+      </div>
+      <div thumbsSlider="" class="swiper modalSwiper">
+        <div class="swiper-wrapper">
+          <!-- 스와이퍼 모달 이미지 -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer_top">
+      <ul class="site_map">
+        <li><a href="#">고객센터</a></li>
+        <li><a href="#">이용약관</a></li>
+        <li> <a href="#">개인정보처리방침</a></li>
+        <li> <a href="#">이메일무단수집금지</a></li>
+        <li> <a href="#">Contact Us</a></li>
+        </li>
+      </ul>
+      <button>
+        나만의 레시피 올리기
+        <div>
+          <img src="/img/footer_arrow.png" alt="">
+        </div>
+      </button>
+    </div>
+    <div class="footer_des">
+      <ul>
+        <li>
+          (주)또쿡 : 울산광역시 또기구 또기로 94 (980113)
+        </li>
+        <li>
+          <ul>
+            <li>대표이사 홍길동</li>
+            <li>T.010.4095.2315</li>
+            <li>F.010.4095.2315</li>
+            <li>E-MAIL.MSS3662352@naver.com</li>
+          </ul>
+        </li>
+        <li>
+          <ul>
+            <li>사업자등록번호 : 010-40-952915</li>
+            <li>통신판매신고번호:1996-08-23</li>
+          </ul>
+        </li>
+      </ul>
+      <button>
+        고객센터 연결하기
+        <div>
+          <img src="/img/arrows.png" alt="">
+        </div>
+      </button>
+    </div>
+    <div class="footer_bottom">
+      <p>© TTOCOOK CO,. LTD. ALL RIGHTS RESERVED.</p>
+      <h1><span>나만의 감정식탁, </span>TTOCOOK</h1>
+    </div>
+  </footer>
+  <!-- BUTTONMODAL -->
+  <button class="top_btn">
+    <img src="/img/top_btn.png" alt="탑버튼">
+  </button>
 </body>
 
 <script>

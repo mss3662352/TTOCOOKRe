@@ -1,7 +1,12 @@
 $(document).ready(function () {
+  $('#id').keypress(function (e) {
+    if (e.which === 13) { 
+        $('#pw').focus();
+    }
+  });
   $('#pw').keypress(function (e) {
       if (e.which === 13) { 
-          check();
+          login();
       }
   });
 });
@@ -51,13 +56,13 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-document.getElementById('login_btn').addEventListener('click', check);
+document.getElementById('login_btn').addEventListener('click', login);
 
 var id = $('#id');
 var pw = $('#pw');
 
 
-function check() {
+function login() {
 
   if (id.val() === "" || pw.val() === "") {
     if (id.val() === "") {
@@ -78,17 +83,17 @@ function check() {
       },
       success: function (response) {
         if (response.success) {
-          alert("로그인 되었습니다.");
-          location.href = '/';
+          alert("로그인에 성공하였습니다.");
+          var redirectUrl = response.redirectUrl || '/';
+          location.href = redirectUrl; // 리디렉션
         } else {
-          alert("로그인 실패." + response.message);
+          alert(response.message);
         }
       },
       error: function (xhr, status, error) {
         // 401 Unauthorized 오류 처리
         if (xhr.status === 401) {
-          alert("로그인 실패. 아이디와 비밀번호를 확인해주세요.");
-          console.error('로그인 실패. 서버 응답:', xhr.responseText);
+          alert("아이디와 비밀번호를 확인해주세요.");
         } else {
           console.error('로그인 중 오류가 발생했습니다.');
         }
