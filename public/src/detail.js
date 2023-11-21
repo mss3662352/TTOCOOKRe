@@ -8,23 +8,51 @@ $(document).ready(function(){
   getDetail(recipeId);
   getRecipeReply(recipeId);
 
+  //댓글 작성
   $(document).on("click", '#reply_button', function(){
+    const commentContent = $('#myComment')
+    if (!commentContent.val().trim()) {
+      alert('댓글란이 비어 있습니다.');
+      commentContent.focus();
+      return;
+    } 
     insertReply(recipeId);
   })
-  rereply();
-  pictureSwiper();
-  modalSwiper();
+  //대댓글 작성
+  $(document).on("click", '.reply-btn', function(){
+    const parentReplyId = $(this).data('parent-id');
+    insertReply(recipeId, parentReplyId);
+  });
 
+  $(document).on("click", '.comment_sub', function() {
+    const clickedCommentItem = $(this).closest('li');
+    const parent_id = clickedCommentItem.next('.answer_wrap').data('parent-id');
+    commentSub(parent_id);
+  });
+
+  $(document).on("click", '.write_review', writeReview);
+  // .photo_swiper .swiper-slide 클릭 시 이벤트 핸들러
+  $(document).on("click", '.photo_swiper .swiper-slide', openModal);
+  // .modal_close 버튼 클릭 시 이벤트 핸들러
+  $(document).on("click", '.modal_close', closeModal);
 })
+
 //댓글 저장
-function insertReply(recipeId){
+function insertReply(recipeId, parentReplyId = null){
   const formData = new FormData();
   const replyFile = $('[name="reply_img"]')[0].files[0];
   const replyPicture = replyFile ? replyFile : '';
-  formData.append('picture', replyPicture);
-  formData.append('rating', $('input[name="rating"]').val());
-  formData.append('content', $('textarea[name="mycomment"]').val());
-  formData.append('recipeId', recipeId)
+  if (parentReplyId) {
+    formData.append('picture', null);
+    formData.append('rating', null);
+    formData.append('content', $('textarea[name="rerecomment"]').val());
+  } else {
+      formData.append('picture', replyPicture);
+      formData.append('rating', $('input[name="rating"]').val());
+      formData.append('content', $('textarea[name="mycomment"]').val());
+  }
+  formData.append('recipeId', recipeId);
+  formData.append('parentReplyId', parentReplyId);
 
   $.ajax({
     type: 'POST',
@@ -33,15 +61,30 @@ function insertReply(recipeId){
     contentType: false,
     processData: false,
     success: function (response) {
-      alert('댓글 등록 완료')
-      getDetail(recipeId);
-      getRecipeReply(recipeId);
+      if (response.success) {
+        alert('댓글 등록 완료');
+        getDetail(recipeId);
+        getRecipeReply(recipeId);
+
+        // 파일 업로드 필드 초기화
+        $('[name="reply_img"]').val(null);
+
+        // 텍스트 에어리어 초기화
+        if (parentReplyId) {
+            $('textarea[name="rerecomment"]').val('');
+        } else {
+            $('textarea[name="mycomment"]').val('');
+        }
+    } else {
+        alert(response.message);
+    }
     },
     error: function (error) {
         console.error('insert_recipe Ajax 오류:', error);
     },
   });
 }
+
 function getDetail(recipeId){
     $.ajax({
       url: '/getDetail',
@@ -53,10 +96,10 @@ function getDetail(recipeId){
       },
       error: function (error) {
           console.error('Error fetching recipe details:', error);
-          // Handle the error, e.g., show an error message
       }
   });
 }
+
 function getRecipeReply(recipeId){
   $.ajax({
     url: '/getRecipeReply',
@@ -66,13 +109,13 @@ function getRecipeReply(recipeId){
     success: function (data) {
         renderRecipeReply(data);
         renderSwiper(data);
-        console.log('data.starValue.average_rating!@#!@'+data.starValue.average_rating);
     },
     error: function (error) {
         console.error('Error fetching recipe reply:', error);
     }
   });
 }
+
 function renderRecipeDetails(data) {
   const recipeDetails = {
     beauty: data.recipe.beauty,
@@ -141,18 +184,22 @@ function renderRecipeDetails(data) {
   //     pickImage.attr('src', '../img/pick.png');
   // }
 }
+
 function renderRecipeReply(data){
-  const replies = data.reply;
+  const topLevelReplies = data.topLevelReplies;
+  const childReplies = data.childReplies;
   let ratingSum = 0;
   let ratingIndex = 0;
   const commentList = $('.comment_list');
   commentList.empty(); // 기존 내용 비우기
 
-  // 각 댓글을 순회하며 HTML 생성
-  replies.forEach(function (reply) {
+  // 각 댓글을 순회하며 dom 생성
+  topLevelReplies.forEach(function(reply){
     const isCurrentUser = reply.user_id === data.sessionUserId;
     ratingSum += parseInt(reply.rating);
-    ratingIndex = ratingIndex + 1;
+    ratingIndex++;
+    const childReplyCount = getChildReplyCount(childReplies, reply.id);
+
     const commentItem = `
       <li>
         <div>
@@ -177,11 +224,11 @@ function renderRecipeReply(data){
             <div>
               <div class="comment_pick">
                 <img id="pickImage" src="/img/pick.png" alt="">
-                <span>4</span>
+                <span>0</span>
               </div>
               <div class="comment_sub">
                 <img src="/img/comment.png" alt="">
-                <span>1</span>
+                <span>${childReplyCount}</span>
               </div>
             </div>
             <div class="answer_btn">
@@ -193,22 +240,82 @@ function renderRecipeReply(data){
         ${reply.picture !== null && reply.picture !== '' ? `<img src="${reply.picture.replace('\public', '')}" alt="">` : ''}
         </div>
       </li>
+      ${renderChildReplies(childReplies, reply.id, data)}
+      
     `;
     commentList.append(commentItem);
+    const moreComment = 
+      `<div class="more_comment">
+        <button>댓글 더보기</button>
+      </div>`
+    commentList.append(moreComment);
   });
-  console.log(' data.starValue.average_rating!! : ' +  data.average_rating);
-  console.log('data.starValue.count_rating!! : ' + data.starValue.count_rating);
-  $('.star_review_avg li').before(generateStarRating((ratingSum/ratingIndex/2).toFixed(2)))
-  $('.star_number').text('('+ (ratingSum/ratingIndex/2).toFixed(2) +' | ' + ratingIndex +')')
+  $('.star_review_avg').empty();
+  // 새로운 평점 요소 추가
+  $('.star_review_avg').append(generateStarRating((ratingSum/ratingIndex/2).toFixed(2)))
+  .append('<li style="width: 100px;"><span class="star_number" style="color: #999; font-size: 12px;">')
+  $('.star_number').text('('+ (ratingSum/ratingIndex/2).toFixed(2) +')')
   $('.review_count').text('('+ratingIndex+')')
 }
 
+function renderChildReplies(childReplies, parentId, data) {
+  const filteredChildReplies = childReplies.filter(reply => reply.parent_reply_id === parentId);
+  if (!filteredChildReplies || filteredChildReplies.length === 0) {
+    return `<div class="answer_wrap" data-parent-id="${parentId}">${renderReplyForm(parentId, data)}</div>`;
+  }
+
+  const childReplyItems = filteredChildReplies.map(childReply => {
+    const isCurrentUser = data.sessionUserId === childReply.user_id;
+    return `
+        <div class="answer">
+          <div class="answer_title">
+            <div>
+              <div class="title_img">
+                <img src="/img/mypage(detail).png" alt="">
+              </div>
+              <p>${childReply.nickname}</p>
+            </div>
+            <span>${childReply.updated_at ? childReply.updated_at + '(수정 됨)' : childReply.created_at}</span>
+          </div>
+          <p>${childReply.content}</p>
+          <div>
+            ${isCurrentUser ? `<button class="edit-btn">수정</button> <button class="delete-btn">삭제</button>` : ''}
+          </div>
+        </div>
+      `;
+  }).join('');
+
+  return `<div class="answer_wrap" data-parent-id="${parentId}">${childReplyItems}${renderReplyForm(parentId, data)}</div>`;
+}
+function renderReplyForm(parentId, data) {
+  const userSession = data.userSession;
+  return `
+    <div class="answer_write">
+      <div class="answer_write_inner">
+        <p>${ userSession ? userSession.nickname :'로그인 해주세요 :)'}</p>
+        <div>
+          <textarea name="rerecomment" cols="30" rows="10" placeholder="타인을 배려 하는 마음을 담아 댓글을 달아주세요."></textarea>
+          <button class="reply-btn" data-parent-id="${parentId}">등록</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 대댓글 개수를 가져오는 함수
+function getChildReplyCount(childReplies, parentId) {
+  return childReplies.filter(reply => reply.parent_reply_id === parentId).length;
+}
 
 function renderSwiper(data){
-  const replies = data.reply;
+  const replies = data.topLevelReplies;
   const photoSwiper = $('.photo_swiper .swiper-wrapper');
   const modalSwiper = $('.modalSwiper .swiper-wrapper')
+  const modal2Swiper = $('.modalSwiper2 .swiper-wrapper');
   photoSwiper.empty(); // 기존 내용 비우기
+  modalSwiper.empty();
+  modal2Swiper.empty();
+
   let pictureIndex = 0;
   replies.forEach(function (reply){
     if (reply.picture !== '' && reply.picture !== null) {
@@ -217,26 +324,69 @@ function renderSwiper(data){
         <div class="swiper-slide">
           <img src="${reply.picture.replace('\public', '')}" alt="">
         </div>`;
-      const modalItem =`
-        <div class="swiper-slide">
-          <img src="${reply.picture.replace('\public', '')}" />
-          <div class="modal_contents">
-            <div class="modal_contents_title">
-              <img src="/img/mypage(detail).png" alt="">
-              <p>${reply.nickname}</p>
-            </div>
-            <p class="modal_contents_des">
-              ${reply.content}
-            </p>
-          </div>
-        </div>`
       photoSwiper.append(pictureItem);
       modalSwiper.append(pictureItem);
-      $('.photo_detail_modal_wrap .swiper-wrapper').append(modalItem);
+    }
+  });
+  replies.forEach(function (reply){
+    if (reply.picture !== '' && reply.picture !== null) {
+      const modalItem =`
+      <div class="swiper-slide">
+        <img src="${reply.picture.replace('\public', '')}" />
+        <div class="modal_contents">
+          <div class="modal_contents_title">
+            <img src="/img/mypage(detail).png" alt="">
+            <p>${reply.nickname}</p>
+          </div>
+          <p class="modal_contents_des">
+            ${reply.content}
+          </p>
+        </div>
+      </div>`
+      modal2Swiper.append(modalItem);
     }
   });
   $('.photo_btn_wrap span').text(pictureIndex);
-
+  
+  /* COMMENT */
+  var swiper1 = new Swiper(".photo_swiper", {
+    slidesPerView: 6,
+    spaceBetween: "8px",
+    slidesPerGroup: 1,
+    loop: true,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+  });
+  /* 모달 스와이퍼 */
+  var swiper2 = new Swiper(".modalSwiper", {
+    loop: true,
+    spaceBetween: 10,
+    slidesPerView: 7,
+    freeMode: true,
+    watchSlidesProgress: true,
+  });
+  var swiper3 = new Swiper(".modalSwiper2", {
+    loop: true,
+    spaceBetween: 10,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    thumbs: {
+      swiper: swiper2
+    },
+  });
+  var photo_swiper = document.querySelector('.photo_swiper').swiper;
+  // photo_swiper의 각 슬라이드에 클릭 이벤트 리스너 연결
+  photo_swiper.slides.forEach(function (slide, index) {
+    slide.addEventListener('click', function () {
+      // 클릭한 슬라이드의 인덱스에 해당하는 다른 Swiper로 이동
+      swiper2.slideTo(index);
+      swiper3.slideTo(index);
+    });
+  });
 }
 
 
@@ -319,9 +469,7 @@ function convertLevelToText(level) {
 }
 
 
-
 //
-
 
 window.addEventListener('scroll', function () {
 
@@ -366,85 +514,47 @@ function togglePick() {
   }, 200);
 }
 
-/* COMMENT */
-function pictureSwiper(){
-  var swiper = new Swiper(".photo_swiper", {
-    slidesPerView: 6,
-    spaceBetween: "8px",
-    slidesPerGroup: 1,
-    loop: true,
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-  });
+
+function openModal() {
+  $('.photo_detail_modal_wrap').css('display', 'block').css('transform', 'translateY(0)');
+  $('body').css('overflow', 'hidden');
 }
-function rereply(){
-  $('.comment_sub').click(function () {
-    var answer = $('.answer_wrap');
-    if (answer.is(':hidden') || answer.css('display') === 'none') {
-      answer.show();
-    } else {
-      answer.hide();
-    }
-  });
 
-  $('.write_review').click(function () {
-    var myCommentElement = $('.my_comment');
-    if (myCommentElement.length) {
-      var elementTop = myCommentElement.offset().top;
-      var elementHeight = myCommentElement.height();
-      var screenHeight = $(window).height();
-      var screenCenter = screenHeight / 2;
-
-      $('html, body').animate({
-        scrollTop: elementTop - screenCenter + elementHeight / 2
-      }, 'slow');
-    }
-  });
+function closeModal() {
+  $('.photo_detail_modal_wrap').css('transform', 'translateY(100%)');
+  setTimeout(function () {
+    $('.photo_detail_modal_wrap').css('display', 'none');
+    $('body').css('overflow', 'auto');
+  }, 300);
 }
-function modalSwiper() {
-  /* 모달 스와이퍼 */
-  var swiper = new Swiper(".modalSwiper", {
-    loop: true,
-    spaceBetween: 10,
-    slidesPerView: 7,
-    freeMode: true,
-    watchSlidesProgress: true,
-  });
-  var swiper2 = new Swiper(".modalSwiper2", {
-    loop: true,
-    spaceBetween: 10,
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-    thumbs: {
-      swiper: swiper,
-    },
-  });
 
-  var modalWrap = $('.photo_detail_modal_wrap');
-  var closeModalButton = $('.modal_close');
-  var photoSwiperSlides = $('.photo_swiper .swiper-slide');
-  var body = $('body');
+function writeReview(){
+  var myCommentElement = $('.my_comment');
+  if (myCommentElement.length) {
+    var elementTop = myCommentElement.offset().top;
+    var elementHeight = myCommentElement.height();
+    var screenHeight = $(window).height();
+    var screenCenter = screenHeight / 2;
 
-  function openModal() {
-    modalWrap.css('display', 'block').css('transform', 'translateY(0)');
-    body.css('overflow', 'hidden');
+    $('html, body').animate({
+      scrollTop: elementTop - screenCenter + elementHeight / 2
+    }, 'slow');
   }
-
-  function closeModal() {
-    modalWrap.css('transform', 'translateY(100%)');
-    setTimeout(function () {
-      modalWrap.css('display', 'none');
-      body.css('overflow', 'auto');
-    }, 300);
+}
+function commentSub(parent_id){
+  var answer = $(`.answer_wrap[data-parent-id="${parent_id}"]`);
+  if (answer.is(':hidden') || answer.css('display') === 'none') {
+    answer.show();
+  } else {
+    answer.hide();
   }
+};
 
-  // .modal_close 버튼 클릭 시 이벤트 핸들러
-  closeModalButton.click(closeModal);
+const drawStar = (target) => {
+  const starContainer = target.parentElement;
+  const starSpan = starContainer.querySelector('.star span');
+  const starValue = target.value || 3;
+  const starPercentage = (starValue / 10) * 100;
 
-  // .photo_swiper .swiper-slide 클릭 시 이벤트 핸들러
-  photoSwiperSlides.click(openModal);
+  starSpan.style.width = `${starPercentage}%`;
 };

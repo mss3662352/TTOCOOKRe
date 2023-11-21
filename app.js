@@ -254,7 +254,11 @@ app.get('/recipe_ingre', (req, res) => {
 
 app.get('/recipe_create', (req, res) => {
     const isAuthenticated = req.session.user ? true : false;
-    res.render('create', { isAuthenticated: isAuthenticated });
+    if (isAuthenticated) {
+        res.render('create', { isAuthenticated: isAuthenticated });
+    } else {
+        res.redirect('/login?returnTo=/recipe_create');
+    };
 });
 app.get('/getType', (req, res) => {
     const query = "SELECT code, name FROM common_code WHERE super_code = 'RTYPE' ORDER BY ord ASC";
@@ -415,67 +419,73 @@ app.get('/getDetail', (req, res) => {
         });
     });
 });
-app.get('/getRecipeReply', (req, res) =>{
+app.get('/getRecipeReply', (req, res) => {
     const recipeId = req.query.id;
     const isAuthenticated = req.session.user ? true : false;
+    const userSession = req.session.user ?  req.session.user :  null;
     const sessionUserId = req.session.user ? req.session.user.id : null;
 
     // 레시피 정보 쿼리
     const replyQuery = `
-        SELECT rr.id, rr.recipe_id, rr.user_id, u.nickname,  rr.content, rr.picture, rr.rating, rr.created_at, rr.updated_at 
-        from recipe_reply rr 
-        join users u on u.id = rr.user_id 
-        join recipe r on r.id = rr.recipe_id
-        where r.id = 123
-        order by rr.id desc
-    `;
-    const starQuery =`
-        SELECT ROUND(SUM(rating) / COUNT(rating) / 2, 2) AS average_rating, count(rating) AS count_rating
-        FROM recipe_reply rr
+        SELECT rr.id, rr.recipe_id, rr.user_id, u.nickname,  rr.content, rr.picture, rr.rating, GetTimeAgo(rr.created_at) AS created_at,
+        GetTimeAgo(rr.updated_at) AS updated_at, rr.parent_reply_id
+        FROM recipe_reply rr 
+        JOIN users u ON u.id = rr.user_id 
         JOIN recipe r ON r.id = rr.recipe_id
-        where r.id = ?
-    `
-    db.query(replyQuery, [recipeId], (error, reply) => {
+        WHERE r.id = ?
+        ORDER BY rr.id DESC
+    `;
+    db.query(replyQuery, [recipeId], (error, replies) => {
         if (error) {
             console.error('Error fetching recipe:', error);
             res.status(500).send('Internal Server Error');
             return;
         }
-        db.query(starQuery, [recipeId], (error, starValue) => {
-            if (error) {
-                console.error('Error fetching recipe:', error);
-                res.status(500).send('Internal Server Error');
-                return;
-            }
-            res.json({isAuthenticated, sessionUserId, reply, starValue})
-        })
-    })
-})
+
+        const topLevelReplies = replies.filter(reply => reply.parent_reply_id === null);
+        const childReplies = replies.filter(reply => reply.parent_reply_id !== null);
+        res.json({ isAuthenticated, sessionUserId, userSession, topLevelReplies, childReplies });
+    });
+});
 app.post('/insert_reply', uploadForReply.single('picture'), (req, res) => {
     const userId = req.session.user ? req.session.user.id : null;
     const recipeId = req.body.recipeId;
+    const parentReplyId = req.body.parentReplyId !='null' ? req.body.parentReplyId : null;
     const rating = req.body.rating;
     const content = req.body.content;
     const picturePath = req.file ? req.file.path : null;
-    console.log('picturePath : ' + picturePath)
     if (!userId) {
-        return res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
-    }
-    const insertQuery = `
-        INSERT INTO recipe_reply (user_id, recipe_id, content, picture, rating)
-        VALUES (?, ?, ?, ?, ?)
-    `;
-
-    db.query(insertQuery, [userId, recipeId, content, picturePath, rating], (error, results) => {
-    if (error) {
-      console.error('댓글 삽입 오류:', error);
-      return res.status(500).json({ success: false, message: '서버 오류' });
+        return res.status(200).json({ success: false, message: '로그인 후 이용해 주세요.' });
     }
 
-    // 성공했다고 가정하고 응답을 보냅니다.
-    res.status(200).json({ success: true, message: '댓글이 성공적으로 등록되었습니다.' });
-  });
+    let insertQuery, values;
+
+    if (parentReplyId) {
+        // 대댓글일 경우 처리
+        insertQuery = `
+            INSERT INTO recipe_reply (user_id, recipe_id, parent_reply_id, content)
+            VALUES (?, ?, ?, ?)
+        `;
+        values = [userId, recipeId, parentReplyId, content];
+    } else {
+        // 댓글일 경우 처리
+        insertQuery = `
+            INSERT INTO recipe_reply (user_id, recipe_id, content, picture, rating)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+        values = [userId, recipeId, content, picturePath, rating];
+    }
+
+    db.query(insertQuery, values, (error, results) => {
+        if (error) {
+            console.error('댓글 삽입 오류:', error);
+            return res.status(500).json({ success: false, message: '서버 오류' });
+        }
+
+        res.status(200).json({ success: true, message: '댓글이 성공적으로 등록되었습니다.' });
+    });
 });
+
 app.get('/guide', (req, res) => {
     const isAuthenticated = req.session.user ? true : false;
     res.render('guide', { isAuthenticated: isAuthenticated });

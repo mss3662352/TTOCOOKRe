@@ -7,7 +7,7 @@
   --font-eng: 'Nanum Myeongjo', serif;
   --font-ko: 'Nanum Gothic', sans-serif;
 
-  /* SIZE*/
+  /* SIZE*/ 
   --size-max-width: 1080px;
 
   /* FONT-WEIGNT */
@@ -752,6 +752,7 @@ body {
 
 .answer_wrap {
   display: none;
+  width: 100%;
   margin: 10px 0 40px;
 }
 
@@ -760,6 +761,7 @@ body {
   background-color: #87870728;
   width: 800px;
   padding: 24px 30px;
+  margin-bottom : 3px;
 }
 
 .answer_title {
@@ -809,6 +811,7 @@ body {
   padding: 10px 0 20px;
   border: 1px solid #69696946;
   border-radius: 10px;
+  width: 860px;
 }
 
 .answer_write p {

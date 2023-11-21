@@ -1,5 +1,4 @@
 /* header active class */
-const isAuthenticated = $('.isAuthenticated').val()
 $(window).scroll(function () {
     if ($(window).scrollTop() > 50) {
         $('header, .top_btn, .recipe_btn').addClass('active');
@@ -22,6 +21,12 @@ $(function () {
         const returnUrl = encodeURIComponent(window.location.href);
         // 로그인 페이지로 이동
         window.location.href = '/login?returnTo=' + returnUrl;
+    })
+})
+$(function () {
+    $('.recipe_btn').on('click', function(){
+        // 로그인 페이지로 이동
+        window.location.href = '/recipe_create'
     })
 })
 $(function () {
