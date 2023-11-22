@@ -9,7 +9,7 @@ const fs = require('fs');
 const db = require("./config/database.js");
 
 const app = express();
-const port = 3000;
+const port = 8001;
 const generateRandomString = (length) => {
     return crypto.randomBytes(Math.ceil(length / 2))
       .toString('hex')
