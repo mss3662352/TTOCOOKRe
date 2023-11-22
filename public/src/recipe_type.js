@@ -2,27 +2,7 @@ var currentPage = 1; // 현재 페이지
 var recipeTypeCode = ''; // 레시피 타입 코드
 
 $(document).ready(function () {
-    
     getRecipeType();
-    getRecipes();
-
-    // 레시피 타입 탭 클릭 이벤트
-    $('.recipe_type_tab').on('click', 'li a', function (event) {
-        event.preventDefault();
-
-        //타입 변경시 초기화
-        currentPage = 1;
-        // 클릭한 레시피 타입의 코드 가져오기
-        recipeTypeCode = $(this).attr('href').split('/').pop();
-
-        // 해당 레시피 타입에 대한 레시피 가져오기
-        getRecipes(recipeTypeCode);
-        // 모든 탭에서 active 클래스 제거
-
-        $('.recipe_type_tab li').removeClass('active');
-
-        $(this).parent('li').addClass('active');
-    });
 });
 
 function getRecipeType() {
@@ -31,19 +11,44 @@ function getRecipeType() {
         data.forEach(function (item) {
             var li = $('<li>');
             var a = $('<a>', {
-                href: item.code,
+                href: '#',
+                id: item.code,
                 text: item.name
             });
 
             li.append(a);
             $('.recipe_type_tab').append(li);
         });
+
+        // 활성 탭 설정
+        var hash = window.location.hash;
+        if (hash) {
+            code = hash.replace('#', '');
+            console.log('code: ' + code);
+            getRecipes(code);
+            
+            // 모든 탭에서 active 클래스 제거
+            $('.recipe_type_tab li').removeClass('active');
+            $('.recipe_type_tab li').find('a[id="' + code + '"]').closest('li').addClass('active');
+        } else {
+            getRecipes();
+        }
+
+        // 레시피 타입 탭 클릭 이벤트
+        $('.recipe_type_tab').on('click', 'li a', function (event) {
+            event.preventDefault();
+            currentPage = 1;
+            recipeTypeCode = $(this).attr('id');
+
+            getRecipes(recipeTypeCode);
+
+            $('.recipe_type_tab li').removeClass('active');
+            $(this).parent('li').addClass('active');
+        });
     });
 }
 
 function getRecipes(recipeTypeCode) {
-    // Ajax 호출로 해당 레시피 타입에 대한 레시피 가져오기
-    console.log('currentPage:'+ currentPage);
     var url = recipeTypeCode ? `/getRecipes?&page=${currentPage}&recipeTypeCode=${recipeTypeCode}` : `/getRecipes?page=${currentPage}`;
 
     $.ajax({

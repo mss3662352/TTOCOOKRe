@@ -91,15 +91,49 @@ const uploadForReply = multer({ storage: storageForReply });
 
 app.get('/', (req, res) => {
     const isAuthenticated = req.session.user ? true : false;
-    res.render('index', { isAuthenticated: isAuthenticated });
+
+    res.render('index', { isAuthenticated: isAuthenticated});
 });
+app.get('/homeRecentRecipe', (req, res) =>{
+
+
+    const query = 'SELECT id, beauty, title, thumbnail, created_at FROM RECIPE ORDER BY created_at DESC LIMIT 9';
+
+    db.query(query, (error, results) => {
+        if (error) {
+            console.error('Error querying the database:', error);
+            res.status(500).json({ success: false, message: 'Internal Server Error' });
+        }
+
+        res.json({ recipes: results });
+    })
+})
+app.get('/homeBestRecipe', (req, res) =>{
+
+
+    const query = 'SELECT id, beauty, title, thumbnail, good FROM RECIPE ORDER BY good DESC LIMIT 7';
+
+    db.query(query, (error, bestRecipes) => {
+        if (error) {
+            console.error('Error querying the database:', error);
+            res.status(500).json({ success: false, message: 'Internal Server Error' });
+        }
+
+        res.json({ bestRecipes: bestRecipes });
+    })
+})
 app.get('/login', (req, res) => {
+    if (req.session.user) {
+        return res.redirect('/');
+    }
      // 현재 페이지의 URL을 세션에 저장
      req.session.returnTo = req.query.returnTo || '/';
 
     const isAuthenticated = req.session.user ? true : false;
+
     res.render('login', { isAuthenticated: isAuthenticated });
 });
+
 app.post('/userLogin', (req, res) => {
     const users = req.body;
   
@@ -201,7 +235,7 @@ app.get('/getRecipes', (req, res) => {
 
     // 레시피 타입에 따른 또는 전체 레시피 목록을 가져오는 엔드포인트
     const query = `
-        SELECT id, user_id, beauty, title, thumbnail, ingredient, time, level, ingre_tip, introduction, tip, good, view 
+        SELECT id, user_id, beauty, title, thumbnail, ingredient, time, level, ingre_tip, introduction, tip, good 
         FROM RECIPE
         ${recipeTypeCode && pageType == 1 ? 'WHERE recipe_type = ?' : ''}
         ${recipeTypeCode && pageType == 2 ? 'WHERE ingredient = ?' : ''} 
@@ -366,7 +400,7 @@ app.get('/getDetail', (req, res) => {
 
     // 레시피 정보 쿼리
     const recipeQuery = `
-        SELECT r.id, r.user_id, u.nickname, beauty, title, thumbnail, ingredient, recipe_type, time, level, ingre_tip, introduction, tip, good, view, r.created_at
+        SELECT r.id, r.user_id, u.nickname, beauty, title, thumbnail, ingredient, recipe_type, time, level, ingre_tip, introduction, tip, good, r.created_at
         FROM recipe r
         LEFT JOIN 
         users u ON r.user_id = u.id

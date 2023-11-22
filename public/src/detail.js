@@ -244,17 +244,19 @@ function renderRecipeReply(data){
       
     `;
     commentList.append(commentItem);
-    const moreComment = 
-      `<div class="more_comment">
-        <button>댓글 더보기</button>
-      </div>`
-    commentList.append(moreComment);
+    // const moreComment = 
+    //   `<div class="more_comment">
+    //     <button>댓글 더보기</button>
+    //   </div>`
+    // commentList.append(moreComment);
   });
   $('.star_review_avg').empty();
   // 새로운 평점 요소 추가
-  $('.star_review_avg').append(generateStarRating((ratingSum/ratingIndex/2).toFixed(2)))
+  let starRating = 0;
+  starRating = (ratingSum/ratingIndex/2).toFixed(2)
+  $('.star_review_avg').append(starRating > 0 ? generateStarRating(starRating) : generateStarRating(0))
   .append('<li style="width: 100px;"><span class="star_number" style="color: #999; font-size: 12px;">')
-  $('.star_number').text('('+ (ratingSum/ratingIndex/2).toFixed(2) +')')
+  $('.star_number').text( starRating > 0 ? '('+starRating+')' :'('+ 0 +')')
   $('.review_count').text('('+ratingIndex+')')
 }
 
@@ -294,7 +296,7 @@ function renderReplyForm(parentId, data) {
       <div class="answer_write_inner">
         <p>${ userSession ? userSession.nickname :'로그인 해주세요 :)'}</p>
         <div>
-          <textarea name="rerecomment" cols="30" rows="10" placeholder="타인을 배려 하는 마음을 담아 댓글을 달아주세요."></textarea>
+          <textarea maxlength="120" name="rerecomment" cols="30" rows="10" placeholder="타인을 배려 하는 마음을 담아 댓글을 달아주세요."></textarea>
           <button class="reply-btn" data-parent-id="${parentId}">등록</button>
         </div>
       </div>
@@ -391,6 +393,7 @@ function renderSwiper(data){
 
 
 function generateStarRating(star) {
+  
   // 주어진 별점을 2로 나누어 채워진 별과 반 별의 개수를 계산
   const fullStarCount = Math.floor(star);
   const remainder = star % 1;
@@ -403,7 +406,12 @@ function generateStarRating(star) {
 
   // 생성된 별점 이미지를 담을 배열
   const starImages = [];
-
+  if(!star){
+    for (let i = 0; i < 5; i++) {
+      starImages.push(`<li><img src="${emptyStarPath}" alt=""></li>`)
+    }
+    return starImages.join('');
+  }
   // 채워진 별 이미지 추가
   for (let i = 0; i < fullStarCount; i++) {
     starImages.push(`<li><img src="${fullStarPath}" alt=""></li>`);
