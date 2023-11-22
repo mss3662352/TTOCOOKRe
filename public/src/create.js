@@ -204,7 +204,6 @@ function insertRecipe(){
         contentType: false,
         processData: false,
         success: function (response) {
-            console.log(response + "성공");
             const recipeId = response.recipeId;
             sendIngredients(recipeId);
             sendSteps(recipeId);
@@ -235,7 +234,6 @@ function sendIngredients(recipeId) {
         data: JSON.stringify({recipeId: recipeId, ingredient: ingredientsData }),  // 변경된 부분
         contentType: 'application/json',
         success: function (response) {
-            console.log(response + " ingredients 성공");
         },
         error: function (error) {
             console.error('ingredients Ajax 오류:', error);
@@ -263,7 +261,6 @@ function sendSteps(recipeId) {
         contentType: false,
         processData: false,
         success: function (response) {
-            console.log(response + " 성공");
             alert("레시피 등록이 완료되었습니다 :)");
             window.location.href = '/recipe_type';
         },

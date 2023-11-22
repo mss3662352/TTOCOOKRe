@@ -36,7 +36,6 @@ $(document).ready(function(){
   // .modal_close 버튼 클릭 시 이벤트 핸들러
   $(document).on("click", '.modal_close', closeModal);
   const userId = getUserId(); // 사용자 ID 가져오는 함수 필요
-  console.log('userId : ' + userId)
   if (userId) {
     toggleView(recipeId);
     $(document).on("click", '.pick', function(){

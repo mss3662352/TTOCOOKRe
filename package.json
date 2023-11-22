@@ -1,8 +1,4 @@
 {
-  "homepage": "https://mss3662352.github.io/TTOCOOKRe/",
-  "name": "TTOCOOKRe",
-  "version": "0.1.0",
-  "private":true,
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -18,9 +14,6 @@
     "path": "^0.12.7"
   },
   "scripts": {
-    "start": "node app.js",
-    "build": "echo 'No build step required'",
-    "predeploy": "cmd /c set PATH=%PATH%;C:\\Program Files\\Git\\cmd && npm run build",
-    "deploy": "gh-pages -d public"
+    "start": "node web.js"
   }
 }

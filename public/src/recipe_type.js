@@ -24,7 +24,6 @@ function getRecipeType() {
         var hash = window.location.hash;
         if (hash) {
             code = hash.replace('#', '');
-            console.log('code: ' + code);
             getRecipes(code);
             
             // 모든 탭에서 active 클래스 제거
@@ -168,8 +167,6 @@ function renderPagination(totalPages, currentPage) {
 }
 
 function changePage(page) {
-    console.log('recipeTypeCode :'+ recipeTypeCode)
-    console.log('page :'+ page)
     currentPage = page;
     getRecipes(recipeTypeCode);
 }
