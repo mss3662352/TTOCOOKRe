@@ -35,6 +35,15 @@ $(document).ready(function(){
   $(document).on("click", '.photo_swiper .swiper-slide', openModal);
   // .modal_close 버튼 클릭 시 이벤트 핸들러
   $(document).on("click", '.modal_close', closeModal);
+  const userId = getUserId(); // 사용자 ID 가져오는 함수 필요
+  console.log('userId : ' + userId)
+  if (userId) {
+    toggleView(recipeId);
+    $(document).on("click", '.pick', function(){
+      togglePick(recipeId)
+    })
+  }
+  
 })
 
 //댓글 저장
@@ -504,15 +513,70 @@ window.addEventListener('scroll', function () {
 
 
 /* PICK */
-function togglePick() {
+// function togglePick() {
+//   const pickButton = $('.pick > img');
+//   const pickImage = $('#pickImage');
+//   const currentSrc = pickImage.attr('src');
+//   if (currentSrc.includes('pick.png')) {
+//     pickImage.attr('src', currentSrc.replace('pick.png', 'pick_red.png'));
+//   } else if (currentSrc.includes('pick_red.png')) {
+//     pickImage.attr('src', currentSrc.replace('pick_red.png', 'pick.png'));
+//   }
+
+//   pickButton.toggleClass('clicked');
+
+//   setTimeout(() => {
+//     pickButton.toggleClass('clicked');
+//   }, 200);
+// }
+function togglePick(recipeId) {
+  // 서버로 찜 여부를 전송
+  $.ajax({
+    type: 'POST',
+    url: '/togglePick',
+    data: { recipeId: recipeId },
+    dataType: 'json',
+    success: function (response) {
+      if (response.success) {
+        // 성공적으로 처리된 경우 클라이언트에서 찜 여부를 업데이트
+        updatePickUI(response.isPicked);
+      } else {
+        alert(response.message);
+      }
+    },
+    error: function (error) {
+      console.error('togglePick Ajax 오류:', error);
+    },
+  });
+}
+function toggleView(recipeId) {
+  // 서버로 찜 여부를 전송
+  $.ajax({
+    type: 'POST',
+    url: '/toggleView',
+    data: { recipeId: recipeId },
+    dataType: 'json',
+    success: function (response) {
+      if (response.success) {
+        // 성공적으로 처리된 경우 클라이언트에서 찜 여부를 업데이트
+        updatePickUI(response.isPicked);
+      } else {
+        alert(response.message);
+      }
+    },
+    error: function (error) {
+      console.error('togglePick Ajax 오류:', error);
+    },
+  });
+}
+function updatePickUI(isPicked) {
   const pickButton = $('.pick > img');
   const pickImage = $('#pickImage');
-  const currentSrc = pickImage.attr('src');
 
-  if (currentSrc.includes('pick.png')) {
-    pickImage.attr('src', currentSrc.replace('pick.png', 'pick_red.png'));
-  } else if (currentSrc.includes('pick_red.png')) {
-    pickImage.attr('src', currentSrc.replace('pick_red.png', 'pick.png'));
+  if (isPicked) {
+    pickImage.attr('src', '/img/pick_red.png');
+  } else {
+    pickImage.attr('src', '/img/pick.png');
   }
 
   pickButton.toggleClass('clicked');
@@ -521,7 +585,6 @@ function togglePick() {
     pickButton.toggleClass('clicked');
   }, 200);
 }
-
 
 function openModal() {
   $('.photo_detail_modal_wrap').css('display', 'block').css('transform', 'translateY(0)');
@@ -566,3 +629,22 @@ const drawStar = (target) => {
 
   starSpan.style.width = `${starPercentage}%`;
 };
+
+function getUserId() {
+  let userId = null;
+
+  $.ajax({
+    type: 'GET',
+    url: '/getUserId', 
+    async: false,  
+    success: function(response) {
+      if (response.success) {
+        userId = response.userId;
+      }
+    },
+    error: function(error) {
+      console.error('Error getting user ID:', error);
+    }
+  });
+  return userId
+}

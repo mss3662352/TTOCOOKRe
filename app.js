@@ -94,6 +94,15 @@ app.get('/', (req, res) => {
 
     res.render('index', { isAuthenticated: isAuthenticated});
 });
+app.get('/getUserId', (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+  
+    if (userId) {
+      res.json({ success: true, userId });
+    } else {
+      res.json({ success: false, message: '사용자 ID를 찾을 수 없습니다.' });
+    }
+});
 app.get('/homeRecentRecipe', (req, res) =>{
 
 
@@ -519,7 +528,71 @@ app.post('/insert_reply', uploadForReply.single('picture'), (req, res) => {
         res.status(200).json({ success: true, message: '댓글이 성공적으로 등록되었습니다.' });
     });
 });
+app.post('/toggleView', (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const recipeId = req.body.recipeId;
 
+    if (!userId) {
+        return res.status(200).json({ success: false, message: '로그인 후 이용해 주세요.' });
+    }
+
+    const checkLikeQuery = `SELECT * FROM good WHERE user_id = ? AND recipe_id = ?`;
+    db.query(checkLikeQuery, [userId, recipeId], (error, results) => {
+        if (error) {
+            console.error('Error checking like status:', error);
+            res.json({ success: false, message: 'Error checking like status' });
+            return;
+        }
+        if (results.length > 0) {
+            res.json({ success: true, isPicked: true });
+        }else{
+            res.json({ success: true, isPicked: false });
+        }
+    })
+})
+app.post('/togglePick', (req, res) => {
+    const userId = req.session.user ? req.session.user.id : null;
+    const recipeId = req.body.recipeId;
+
+    const checkLikeQuery = `SELECT * FROM good WHERE user_id = ? AND recipe_id = ?`;
+    db.query(checkLikeQuery, [userId, recipeId], (error, results) => {
+        if (error) {
+            console.error('Error checking like status:', error);
+            res.json({ success: false, message: 'Error checking like status' });
+            return;
+        }
+
+        let isPicked = false;
+
+        if (results.length > 0) {
+            // 이미 좋아요를 누른 상태
+            isPicked = true;
+            // 좋아요 취소 로직 - 데이터베이스에서 해당 레코드 삭제
+            const deleteLikeQuery = `DELETE FROM good WHERE user_id = ? AND recipe_id = ?`;
+            db.query(deleteLikeQuery, [userId, recipeId], (deleteError, deleteResults) => {
+                if (deleteError) {
+                    console.error('Error deleting like:', deleteError);
+                    res.json({ success: false, message: 'Error deleting like' });
+                    return;
+                }
+                // 여기서 연결을 닫지 않음
+                res.json({ success: true, isPicked: false });
+            });
+        } else {
+            // 좋아요 추가 로직 - 데이터베이스에 새로운 레코드 삽입
+            const insertLikeQuery = `INSERT INTO GOOD (user_id, recipe_id) VALUES (?, ?)`;
+            db.query(insertLikeQuery, [userId, recipeId], (insertError, insertResults) => {
+                if (insertError) {
+                    console.error('Error inserting like:', insertError);
+                    res.json({ success: false, message: 'Error inserting like' });
+                    return;
+                }
+                // 여기서 연결을 닫지 않음
+                res.json({ success: true, isPicked: true });
+            });
+        }
+    });
+});
 app.get('/guide', (req, res) => {
     const isAuthenticated = req.session.user ? true : false;
     res.render('guide', { isAuthenticated: isAuthenticated });
