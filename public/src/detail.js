@@ -73,7 +73,8 @@ function insertReply(recipeId, parentReplyId = null){
         alert('댓글 등록 완료');
         getDetail(recipeId);
         getRecipeReply(recipeId);
-
+        console.log(parentReplyId)
+        $(`.answer_wrap[data-parent-id="${parentReplyId}"]`).show();
         // 파일 업로드 필드 초기화
         $('[name="reply_img"]').val(null);
 
@@ -222,7 +223,7 @@ function renderRecipeReply(data){
                 ${generateStarRating(reply.rating/2)}
                 </ul>
               </div>
-              <span>${reply.updated_at ? reply.updated_at+'(수정 됨)' : reply.created_at}</span>
+              <span>${reply.updated_at ? formatTimeAgo(reply.updated_at)+'(수정 됨)' : formatTimeAgo(reply.created_at)}</span>
             </div>
             <p class="comment_main">
               ${reply.content}
@@ -240,7 +241,8 @@ function renderRecipeReply(data){
               </div>
             </div>
             <div class="answer_btn">
-              ${isCurrentUser ? `<button>수정</button><button>삭제</button>` : ''}
+              <button>신고</button> 
+              ${isCurrentUser ? `<button>삭제</button>` : ''}
             </div>
           </div>
         </div>
@@ -285,11 +287,12 @@ function renderChildReplies(childReplies, parentId, data) {
               </div>
               <p>${childReply.nickname}</p>
             </div>
-            <span>${childReply.updated_at ? childReply.updated_at + '(수정 됨)' : childReply.created_at}</span>
+            <span>${childReply.updated_at ? formatTimeAgo(childReply.updated_at) + '(수정 됨)' : formatTimeAgo(childReply.created_at)}</span>
           </div>
           <p>${childReply.content}</p>
           <div>
-            ${isCurrentUser ? `<button class="edit-btn">수정</button> <button class="delete-btn">삭제</button>` : ''}
+            <button class="report-btn">신고</button>
+            ${isCurrentUser ? `<button class="delete-btn">삭제</button>` : ''}
           </div>
         </div>
       `;
@@ -646,4 +649,26 @@ function getUserId() {
     }
   });
   return userId
+}
+
+function formatTimeAgo(timestamp) {
+  const date = new Date(timestamp);
+  const minutesAgo = Math.floor((Date.now() - date.getTime()) / (1000 * 60));
+
+  if (minutesAgo < 60) {
+      return `${minutesAgo}분 전`;
+  } else if (minutesAgo < 1440) {
+      return `${Math.floor(minutesAgo / 60)}시간 전`;
+  } else {
+      return formatDate(timestamp);
+  }
+}
+function formatDate(date) {
+  const options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+  };
+
+  return new Date(date).toLocaleDateString('ko-KR', options);
 }

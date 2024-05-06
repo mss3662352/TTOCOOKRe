@@ -29,10 +29,10 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    secret: secret, // 세션을 암호화하는 데 사용되는 키
+    secret: secret,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // HTTPS가 아닌 환경에서도 동작하도록 설정
+    cookie: { secure: false }
 }));
 app.use((req, res, next) => {
     // isAuthenticated 변수를 모든 뷰에서 사용할 수 있도록 res.locals에 추가
@@ -43,8 +43,6 @@ app.use((req, res, next) => {
 
     next(); // 다음 미들웨어로 이동
 });
-
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const uploadDir = 'public/uploads/thumbnail';
@@ -106,7 +104,7 @@ app.get('/getUserId', (req, res) => {
 app.get('/homeRecentRecipe', (req, res) =>{
 
 
-    const query = 'SELECT id, beauty, title, thumbnail, created_at FROM RECIPE ORDER BY created_at DESC LIMIT 9';
+    const query = 'SELECT id, beauty, title, thumbnail, created_at FROM recipe ORDER BY created_at DESC LIMIT 9';
 
     db.query(query, (error, results) => {
         if (error) {
@@ -120,7 +118,7 @@ app.get('/homeRecentRecipe', (req, res) =>{
 app.get('/homeBestRecipe', (req, res) =>{
 
 
-    const query = 'SELECT id, beauty, title, thumbnail, good FROM RECIPE ORDER BY good DESC LIMIT 7';
+    const query = 'SELECT id, beauty, title, thumbnail, good FROM recipe ORDER BY good DESC LIMIT 7';
 
     db.query(query, (error, bestRecipes) => {
         if (error) {
@@ -245,7 +243,7 @@ app.get('/getRecipes', (req, res) => {
     // 레시피 타입에 따른 또는 전체 레시피 목록을 가져오는 엔드포인트
     const query = `
         SELECT id, user_id, beauty, title, thumbnail, ingredient, time, level, ingre_tip, introduction, tip, good 
-        FROM RECIPE
+        FROM recipe
         ${recipeTypeCode && pageType == 1 ? 'WHERE recipe_type = ?' : ''}
         ${recipeTypeCode && pageType == 2 ? 'WHERE ingredient = ?' : ''} 
         order by id desc 
@@ -254,10 +252,10 @@ app.get('/getRecipes', (req, res) => {
 
     // 레시피 타입에 따른 또는 전체 전체 레시피 수를 가져오는 쿼리
     const countQuery = (recipeTypeCode && pageType === 1) ?
-    'SELECT COUNT(*) as total FROM RECIPE WHERE recipe_type = ?' :
+    'SELECT COUNT(*) as total FROM recipe WHERE recipe_type = ?' :
     ((recipeTypeCode && pageType === 2) ?
-        'SELECT COUNT(*) as total FROM RECIPE WHERE ingredient = ?' :
-        'SELECT COUNT(*) as total FROM RECIPE');
+        'SELECT COUNT(*) as total FROM recipe WHERE ingredient = ?' :
+        'SELECT COUNT(*) as total FROM recipe');
 
     // 병렬로 두 쿼리 실행
     db.query(query, recipeTypeCode ? [recipeTypeCode] : [], (error, results) => {
@@ -470,8 +468,8 @@ app.get('/getRecipeReply', (req, res) => {
 
     // 레시피 정보 쿼리
     const replyQuery = `
-        SELECT rr.id, rr.recipe_id, rr.user_id, u.nickname,  rr.content, rr.picture, rr.rating, GetTimeAgo(rr.created_at) AS created_at,
-        GetTimeAgo(rr.updated_at) AS updated_at, rr.parent_reply_id
+        SELECT rr.id, rr.recipe_id, rr.user_id, u.nickname,  rr.content, rr.picture, rr.rating, rr.created_at,
+        rr.updated_at, rr.parent_reply_id
         FROM recipe_reply rr 
         JOIN users u ON u.id = rr.user_id 
         JOIN recipe r ON r.id = rr.recipe_id
@@ -580,7 +578,7 @@ app.post('/togglePick', (req, res) => {
             });
         } else {
             // 좋아요 추가 로직 - 데이터베이스에 새로운 레코드 삽입
-            const insertLikeQuery = `INSERT INTO GOOD (user_id, recipe_id) VALUES (?, ?)`;
+            const insertLikeQuery = `INSERT INTO good (user_id, recipe_id) VALUES (?, ?)`;
             db.query(insertLikeQuery, [userId, recipeId], (insertError, insertResults) => {
                 if (insertError) {
                     console.error('Error inserting like:', insertError);

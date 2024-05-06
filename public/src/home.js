@@ -1,3 +1,6 @@
+
+$(homeRecentRecipe());
+$(homeBestRecipe());
 function getBestSwiper(data){
     const swiperWrapper = $('.best_wrap ul');
     swiperWrapper.empty();
@@ -62,5 +65,3 @@ function homeBestRecipe(){
       }
   });
 }
-$(homeRecentRecipe());
-$(homeBestRecipe());
